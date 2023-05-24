@@ -1,0 +1,26 @@
+[build-system]
+requires = [
+  "setuptools >= 45.0.0",
+  "setuptools_scm[toml] >= 7.0.5",
+  "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "molecule_qemu"
+dynamic = ["version"]
+description = "Molecule QEMU"
+authors = [{ "name" = "Andrey Gubarev", "email" = "andrey@andreygubarev.com" }]
+
+readme = "README.md"
+license = { text = "MIT" }
+
+dependencies = ["molecule >= 5.0"]
+
+[project.urls]
+Homepage = "https://github.com/andreygubarev/molecule-qemu/"
+
+[project.entry-points."molecule.driver"]
+molecule_qemu = "molecule_qemu.driver:QEMU"
+
+[tool.setuptools_scm]
