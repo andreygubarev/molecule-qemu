@@ -8,6 +8,7 @@
     molecule_ephemeral_directory: "{{ lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}"
     molecule_scenario_name: "{{ lookup('env', 'MOLECULE_SCENARIO_NAME') }}"
     molecule_project_name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
+    vm_arch: "x86_64"
 
   tasks:
     - name: Register VMs data
@@ -24,3 +25,16 @@
     - name: Prepare VMs data
       ansible.builtin.set_fact:
         molecule_instances: "{{ molecule_instances.results | map(attribute='ansible_facts.instance') | list }}"
+
+    - debug: var=molecule_instances
+
+    - name: Register qemu executable path  # noqa: command-instead-of-shell
+      ansible.builtin.shell: "command -v qemu-system-{{ vm_arch }}"
+      register: qemu_path
+      changed_when: false
+
+    - name: Prepare qemu executable path
+      ansible.builtin.set_fact:
+        qemu_cmd: "{{ qemu_path.stdout }}"
+
+    - debug: var=qemu_cmd
