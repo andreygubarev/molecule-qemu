@@ -20,6 +20,7 @@
           "vm_arch": "{{ item.vm_arch | default(qemu_vm_arch) }}",
           "vm_image": "{{ item.vm_image }}",
           "vm_memory": "{{ item.vm_memory | default(qemu_vm_memory) }}",
+          "vm_ssh_port": "{{ item.vm_ssh_port | default(10022) }}",
         }
       loop: "{{ molecule_yml.platforms }}"
       loop_control:
@@ -37,7 +38,7 @@
         qemu-system-{{ item.vm_arch }}
         -m {{ item.vm_memory }}
         -hda {{ item.vm_image }}
-        -net user,hostfwd=tcp::10022-:22
+        -net user,hostfwd=tcp::{{ vm_ssh_port }}-:22
         -net nic
         -display none
         -daemonize
