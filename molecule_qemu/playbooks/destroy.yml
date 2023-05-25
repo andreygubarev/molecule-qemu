@@ -26,6 +26,7 @@
     - name: Destroy running VMs
       ansible.builtin.command: >
         kill {{ item.ansible_facts.pid }}
+      changed_when: false
       loop: "{{ qemu_processes.results }}"
       loop_control:
         label: "{{ item.item.name }}"
