@@ -25,6 +25,7 @@
           "name": "{{ item.name }}",
           "vm_arch": "{{ item.vm_arch | default(qemu_vm_arch) }}",
           "vm_image": "{{ item.vm_image }}",
+          "vm_image_format": "{{ item.vm_image_format | default('qcow2') }}",
           "vm_memory": "{{ item.vm_memory | default(qemu_vm_memory) }}",
           "vm_ssh_host": "{{ item.vm_ssh_host | default('127.0.0.1') }}",
           "vm_ssh_port": "{{ item.vm_ssh_port | default(10022) }}",
@@ -49,11 +50,12 @@
         state: directory
         mode: "0755"
 
-    - name: Clone VMs image
-      ansible.builtin.copy:
-        src: "{{ item.vm_image }}"
-        dest: "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.img"
-        mode: "0644"
+    - name: Create VMs disks based on provided image
+      ansible.builtin.command: >
+        qemu-img create
+        -f qcow2
+        -o backing_file={{ item.vm_image }},backing_fmt={{ item.vm_image_format }}
+        {{ molecule_ephemeral_directory }}/run/{{ item.name }}.qcow2
       loop: "{{ molecule_instances }}"
       loop_control:
         label: "{{ item.name }}"
@@ -62,7 +64,7 @@
       ansible.builtin.command: >
         qemu-system-{{ item.vm_arch }}
         -m {{ item.vm_memory }}
-        -hda {{ molecule_ephemeral_directory }}/run/{{ item.name }}.img
+        -hda {{ molecule_ephemeral_directory }}/run/{{ item.name }}.qcow2
         -net user,hostfwd=tcp::{{ item.vm_ssh_port }}-:22
         -net nic
         -display none
