@@ -54,6 +54,8 @@
         -f qcow2
         -o backing_file={{ item.vm_image }},backing_fmt={{ item.vm_image_format }}
         {{ item.vm_run_diskfile }}
+      args:
+        creates: "{{ item.vm_run_diskfile }}"
       loop: "{{ molecule_instances }}"
       loop_control:
         label: "{{ item.name }}"
@@ -93,6 +95,8 @@
         -joliet
         -rock
         {{ molecule_ephemeral_directory }}/run/cloud-init/{{ item.name }}/
+      args:
+        creates: "{{ molecule_ephemeral_directory }}/run/cloud-init/{{ item.name }}.iso"
       loop: "{{ molecule_instances }}"
       loop_control:
         label: "{{ item.name }}"
