@@ -43,7 +43,7 @@ verifier:
 # Cloud Images
 
 * [Ubuntu](https://cloud-images.ubuntu.com/)
-* [Debian](https://cdimage.debian.org/cdimage/openstack/current/)
+* [Debian](https://cloud.debian.org/images/cloud/)
 
 # Reference
 
