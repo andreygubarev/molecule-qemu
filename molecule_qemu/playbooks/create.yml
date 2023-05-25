@@ -30,6 +30,7 @@
           "vm_ssh_port": "{{ item.vm_ssh_port | default(10022) }}",
           "vm_ssh_user": "{{ item.vm_ssh_user | default('root') }}",
           "vm_ssh_identity_file": "{{ item.vm_ssh_identity_file | default(vm_ssh_identity_file.filename) }}",
+          "vm_pidfile": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.pid",
         }
       loop: "{{ molecule_yml.platforms }}"
       loop_control:
@@ -42,6 +43,12 @@
 
     - debug: var=molecule_instances
 
+    - name: Ensure run directory exists
+      ansible.builtin.file:
+        path: "{{ molecule_ephemeral_directory }}/run/"
+        state: directory
+        mode: "0755"
+
     - name: Launch VMs  # noqa: no-changed-when
       ansible.builtin.command: >
         qemu-system-{{ item.vm_arch }}
@@ -51,7 +58,7 @@
         -net nic
         -display none
         -daemonize
-        -pidfile {{ molecule_ephemeral_directory }}/pid-{{ item.name }}.txt
+        -pidfile {{ item.vm_pidfile }}
       loop: "{{ molecule_instances }}"
       loop_control:
         label: "{{ item.name }}"
@@ -65,7 +72,7 @@
           "user": "{{ item.vm_ssh_user }}",
           "port": "{{ item.vm_ssh_port }}",
           "identity_file": "{{ item.vm_ssh_identity_file }}",
-          "pidfile": "{{ molecule_ephemeral_directory }}/pid-{{ item.name }}.txt",
+          "pidfile": "{{ item.vm_pidfile }}",
         }
       loop: "{{ molecule_instances }}"
       loop_control:
