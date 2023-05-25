@@ -23,8 +23,6 @@
         label: "{{ item.name }}"
       register: qemu_processes
 
-    - debug: var=qemu_processes
-
     - name: Destroy running VMs
       ansible.builtin.shell: "kill {{ item.ansible_facts.pid }}"
       loop: "{{ qemu_processes.results }}"
