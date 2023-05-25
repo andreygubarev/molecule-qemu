@@ -108,10 +108,12 @@
     - name: Launch VMs  # noqa: no-changed-when
       ansible.builtin.command: >
         qemu-system-{{ item.vm_arch }}
-        -m {{ item.vm_memory }}
+        -boot d
+        -cdrom {{ molecule_ephemeral_directory }}/run/cloud-init/{{ item.name }}.iso
         -hda {{ item.vm_run_diskfile }}
-        -net user,hostfwd=tcp::{{ item.vm_ssh_port }}-:22
+        -m {{ item.vm_memory }}
         -net nic
+        -net user,hostfwd=tcp::{{ item.vm_ssh_port }}-:22
         -display none
         -daemonize
         -pidfile {{ item.vm_run_pidfile }}
