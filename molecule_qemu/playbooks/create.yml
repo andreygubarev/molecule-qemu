@@ -123,6 +123,20 @@
       loop: "{{ molecule_instances }}"
       loop_control:
         label: "{{ item.name }}"
+      async: 300
+      poll: 0
+      register: qemu_launch
+
+    - name: Wait for launch jobs to finish
+      ansible.builtin.async_status:
+        jid: "{{ item.ansible_job_id }}"
+      loop: "{{ qemu_launch.results }}"
+      loop_control:
+        label: "{{ item.item.name }}"
+      register: qemu_launch_status
+      until: qemu_launch_status.finished
+      retries: 30
+      delay: 10
 
     - name: Prepare VMs config dict
       ansible.builtin.set_fact:
