@@ -18,7 +18,7 @@ virtualenv: $(ANSIBLE_VIRTUALENV) ## Create local environment
 
 .PHONY: lint
 lint: virtualenv ## Lint
-	$(ANSIBLE_VIRTUALENV)/bin/ansible-lint -v
+	$(ANSIBLE_VIRTUALENV)/bin/ansible-lint -v molecule_qemu
 	$(ANSIBLE_VIRTUALENV)/bin/pycodestyle molecule_qemu
 
 .PHONY: clean
