@@ -31,7 +31,8 @@
           "vm_ssh_port": "{{ item.vm_ssh_port | default(10022) }}",
           "vm_ssh_user": "{{ item.vm_ssh_user | default('root') }}",
           "vm_ssh_identity_file": "{{ item.vm_ssh_identity_file | default(vm_ssh_identity_file.filename) }}",
-          "vm_pidfile": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.pid",
+          "vm_run_pidfile": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.pid",
+          "vm_run_diskfile": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.qcow2",
         }
       loop: "{{ molecule_yml.platforms }}"
       loop_control:
@@ -55,7 +56,7 @@
         qemu-img create
         -f qcow2
         -o backing_file={{ item.vm_image }},backing_fmt={{ item.vm_image_format }}
-        {{ molecule_ephemeral_directory }}/run/{{ item.name }}.qcow2
+        {{ item.vm_run_diskfile }}
       loop: "{{ molecule_instances }}"
       loop_control:
         label: "{{ item.name }}"
@@ -64,12 +65,12 @@
       ansible.builtin.command: >
         qemu-system-{{ item.vm_arch }}
         -m {{ item.vm_memory }}
-        -hda {{ molecule_ephemeral_directory }}/run/{{ item.name }}.qcow2
+        -hda {{ item.vm_run_diskfile }}
         -net user,hostfwd=tcp::{{ item.vm_ssh_port }}-:22
         -net nic
         -display none
         -daemonize
-        -pidfile {{ item.vm_pidfile }}
+        -pidfile {{ item.vm_run_pidfile }}
       loop: "{{ molecule_instances }}"
       loop_control:
         label: "{{ item.name }}"
@@ -83,7 +84,8 @@
           "user": "{{ item.vm_ssh_user }}",
           "port": "{{ item.vm_ssh_port }}",
           "identity_file": "{{ item.vm_ssh_identity_file }}",
-          "pidfile": "{{ item.vm_pidfile }}",
+          "pidfile": "{{ item.vm_run_pidfile }}",
+          "diskfile": "{{ item.vm_run_diskfile }}",
         }
       loop: "{{ molecule_instances }}"
       loop_control:
