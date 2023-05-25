@@ -38,7 +38,7 @@
         qemu-system-{{ item.vm_arch }}
         -m {{ item.vm_memory }}
         -hda {{ item.vm_image }}
-        -net user,hostfwd=tcp::{{ vm_ssh_port }}-:22
+        -net user,hostfwd=tcp::{{ item.vm_ssh_port }}-:22
         -net nic
         -display none
         -daemonize
