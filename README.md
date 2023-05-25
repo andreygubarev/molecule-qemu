@@ -8,6 +8,11 @@ Molecule QEMU driver for testing Ansible roles.
 brew install qemu cdrtools
 ```
 
+# Cloud Images
+
+* [Ubuntu](https://cloud-images.ubuntu.com/)
+* [Debian](https://cdimage.debian.org/cdimage/openstack/current/)
+
 # Reference
 
 * [Ansible](https://www.ansible.com/)
