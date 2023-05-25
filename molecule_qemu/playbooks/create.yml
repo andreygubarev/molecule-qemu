@@ -61,6 +61,38 @@
       loop_control:
         label: "{{ item.name }}"
 
+    - name: Create cloud-init folders
+      ansible.builtin.file:
+        path: "{{ molecule_ephemeral_directory }}/run/cloud-init/{{ item.name }}/"
+        state: directory
+        mode: "0755"
+      loop: "{{ molecule_instances }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Create cloud-init meta-data
+      ansible.builtin.copy:
+        content: |
+          instance-id: {{ item.name }}
+          local-hostname: {{ item.name }}
+        dest: "{{ molecule_ephemeral_directory }}/run/cloud-init/{{ item.name }}/meta-data"
+        mode: "0644"
+      loop: "{{ molecule_instances }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Create cloud-init user-data
+      ansible.builtin.copy:
+        content: |
+          #cloud-config
+          ssh_authorized_keys:
+            - {{ vm_ssh_identity_file.public_key }}
+        dest: "{{ molecule_ephemeral_directory }}/run/cloud-init/{{ item.name }}/user-data"
+        mode: "0644"
+      loop: "{{ molecule_instances }}"
+      loop_control:
+        label: "{{ item.name }}"
+
     - name: Launch VMs  # noqa: no-changed-when
       ansible.builtin.command: >
         qemu-system-{{ item.vm_arch }}
