@@ -45,6 +45,3 @@
       loop: "{{ molecule_instances }}"
       loop_control:
         label: "{{ item.name }}"
-      async: 7200
-      poll: 0
-      register: qemu_launch
