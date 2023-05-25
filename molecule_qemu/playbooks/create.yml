@@ -115,6 +115,17 @@
       loop_control:
         label: "{{ item.name }}"
 
+    - name: Wait for SSH to be ready
+      ansible.builtin.wait_for:
+        host: "{{ item.vm_ssh_host }}"
+        port: "{{ item.vm_ssh_port }}"
+        delay: 5
+        timeout: 180
+        search_regex: "OpenSSH"
+      loop: "{{ molecule_instances }}"
+      loop_control:
+        label: "{{ item.name }}"
+
     - name: Prepare VMs config dict
       ansible.builtin.set_fact:
         instance_conf_dict: {
