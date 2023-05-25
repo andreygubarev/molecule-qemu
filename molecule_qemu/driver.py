@@ -9,7 +9,7 @@ LOG = logger.get_logger(__name__)
 class QEMU(Driver):
     def __init__(self, config=None) -> None:
         super().__init__(config)
-        self._name = "molecule_qemu"
+        self._name = "molecule-qemu"
 
     @property
     def name(self):
