@@ -93,6 +93,18 @@
       loop_control:
         label: "{{ item.name }}"
 
+    - name: Create cloud-init iso using mkisofs
+      ansible.builtin.command: >
+        mkisofs
+        -output {{ molecule_ephemeral_directory }}/run/cloud-init/{{ item.name }}.iso
+        -volid cidata
+        -joliet
+        -rock
+        {{ molecule_ephemeral_directory }}/run/cloud-init/{{ item.name }}/
+      loop: "{{ molecule_instances }}"
+      loop_control:
+        label: "{{ item.name }}"
+
     - name: Launch VMs  # noqa: no-changed-when
       ansible.builtin.command: >
         qemu-system-{{ item.vm_arch }}
