@@ -20,7 +20,9 @@
           "vm_arch": "{{ item.vm_arch | default(qemu_vm_arch) }}",
           "vm_image": "{{ item.vm_image }}",
           "vm_memory": "{{ item.vm_memory | default(qemu_vm_memory) }}",
+          "vm_ssh_host": "{{ item.vm_ssh_host | default('127.0.0.1') }}",
           "vm_ssh_port": "{{ item.vm_ssh_port | default(10022) }}",
+          "vm_ssh_user": "{{ item.vm_ssh_user | default('root') }}",
         }
       loop: "{{ molecule_yml.platforms }}"
       loop_control:
@@ -46,3 +48,28 @@
       loop: "{{ molecule_instances }}"
       loop_control:
         label: "{{ item.name }}"
+
+    - name: Prepare VMs config dict
+      ansible.builtin.set_fact:
+        instance_conf_dict: {
+          "instance": "{{ item.instance }}",
+          "name": "{{ item.name }}",
+          "address": "{{ item.vm_ssh_host }}",
+          "user": "{{ item.vm_ssh_user }}",
+          "port": "{{ item.vm_ssh_port }}",
+          "pidfile": "{{ molecule_ephemeral_directory }}/pid-{{ item.name }}.txt",
+        }
+      loop: "{{ molecule_instances }}"
+      loop_control:
+        label: "{{ item.name }}"
+      register: instance_config_dict
+
+    - name: Prepare VMs config list
+      ansible.builtin.set_fact:
+        instance_conf: "{{ instance_config_dict.results | map(attribute='ansible_facts.instance_conf_dict') | list }}"
+
+    - name: Dump VMs config
+      ansible.builtin.copy:
+        content: "{{ instance_conf | to_json | from_json | to_yaml }}"
+        dest: "{{ molecule_instance_config }}"
+        mode: "0644"
