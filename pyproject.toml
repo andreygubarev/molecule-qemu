@@ -7,7 +7,7 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "molecule_qemu"
+name = "molecule-qemu"
 dynamic = ["version"]
 description = "Molecule QEMU"
 authors = [{ "name" = "Andrey Gubarev", "email" = "andrey@andreygubarev.com" }]
@@ -21,6 +21,6 @@ dependencies = ["molecule >= 5.0"]
 Homepage = "https://github.com/andreygubarev/molecule-qemu/"
 
 [project.entry-points."molecule.driver"]
-molecule_qemu = "molecule_qemu.driver:QEMU"
+molecule-qemu = "molecule_qemu.driver:QEMU"
 
 [tool.setuptools_scm]
