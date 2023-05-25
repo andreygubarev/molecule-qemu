@@ -12,6 +12,12 @@
     qemu_vm_memory: "1024"
 
   tasks:
+    - name: Generate OpenSSH key pair
+      community.crypto.openssh_keypair:
+        path: "{{ molecule_ephemeral_directory }}/id_ed25519"
+        type: ed25519
+      register: vm_ssh_identity_file
+
     - name: Register VMs data
       ansible.builtin.set_fact:
         instance: {
@@ -23,6 +29,7 @@
           "vm_ssh_host": "{{ item.vm_ssh_host | default('127.0.0.1') }}",
           "vm_ssh_port": "{{ item.vm_ssh_port | default(10022) }}",
           "vm_ssh_user": "{{ item.vm_ssh_user | default('root') }}",
+          "vm_ssh_identity_file": "{{ item.vm_ssh_identity_file | default(vm_ssh_identity_file.filename) }}",
         }
       loop: "{{ molecule_yml.platforms }}"
       loop_control:
@@ -57,6 +64,7 @@
           "address": "{{ item.vm_ssh_host }}",
           "user": "{{ item.vm_ssh_user }}",
           "port": "{{ item.vm_ssh_port }}",
+          "identity_file": "{{ item.vm_ssh_identity_file }}",
           "pidfile": "{{ molecule_ephemeral_directory }}/pid-{{ item.name }}.txt",
         }
       loop: "{{ molecule_instances }}"
