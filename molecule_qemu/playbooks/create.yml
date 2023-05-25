@@ -70,23 +70,18 @@
       loop_control:
         label: "{{ item.name }}"
 
-    - name: Create cloud-init meta-data
-      ansible.builtin.copy:
-        content: |
-          instance-id: {{ item.name }}
-          local-hostname: {{ item.name }}
+    - name: Render meta-data template
+      ansible.builtin.template:
+        src: templates/meta-data.j2
         dest: "{{ molecule_ephemeral_directory }}/run/cloud-init/{{ item.name }}/meta-data"
         mode: "0644"
       loop: "{{ molecule_instances }}"
       loop_control:
         label: "{{ item.name }}"
 
-    - name: Create cloud-init user-data
-      ansible.builtin.copy:
-        content: |
-          #cloud-config
-          ssh_authorized_keys:
-            - {{ vm_ssh_identity_file.public_key }}
+    - name: Render user-data template
+      ansible.builtin.template:
+        src: templates/user-data.j2
         dest: "{{ molecule_ephemeral_directory }}/run/cloud-init/{{ item.name }}/user-data"
         mode: "0644"
       loop: "{{ molecule_instances }}"
