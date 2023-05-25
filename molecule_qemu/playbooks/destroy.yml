@@ -13,7 +13,7 @@
       rescue:
         - name: Prepare VMs config when file missing
           ansible.builtin.set_fact:
-            instance_conf: {}
+            instance_conf: []
 
     - name: Read PID files
       ansible.builtin.set_fact:
@@ -47,7 +47,7 @@
 
     - name: Prepare VMs config list
       ansible.builtin.set_fact:
-        instance_conf: {}
+        instance_conf: []
 
     - name: Dump VMs config
       ansible.builtin.copy:
