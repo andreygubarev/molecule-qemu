@@ -8,7 +8,8 @@
     molecule_ephemeral_directory: "{{ lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}"
     molecule_scenario_name: "{{ lookup('env', 'MOLECULE_SCENARIO_NAME') }}"
     molecule_project_name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
-    vm_arch: "x86_64"
+    qemu_vm_arch: "x86_64"
+    qemu_vm_memory: "1024"
 
   tasks:
     - name: Register VMs data
@@ -16,6 +17,9 @@
         instance: {
           "instance": "molecule-{{ molecule_project_name }}-{{ molecule_scenario_name }}-{{ item.name }}",
           "name": "{{ item.name }}",
+          "vm_arch": "{{ item.vm_arch | default(qemu_vm_arch) }}",
+          "vm_image": "{{ item.vm_image }}",
+          "vm_memory": "{{ item.vm_memory | default(qemu_vm_memory) }}",
         }
       loop: "{{ molecule_yml.platforms }}"
       loop_control:
@@ -28,13 +32,19 @@
 
     - debug: var=molecule_instances
 
-    - name: Register qemu executable path  # noqa: command-instead-of-shell
-      ansible.builtin.shell: "command -v qemu-system-{{ vm_arch }}"
-      register: qemu_path
-      changed_when: false
-
-    - name: Prepare qemu executable path
-      ansible.builtin.set_fact:
-        qemu_cmd: "{{ qemu_path.stdout }}"
-
-    - debug: var=qemu_cmd
+    - name: Launch VMs  # noqa: no-changed-when
+      ansible.builtin.command: >
+        qemu-system-{{ item.vm_arch }}
+        -m {{ item.vm_memory }}
+        -hda {{ item.vm_image }}
+        -net user,hostfwd=tcp::10022-:22
+        -net nic
+        -display none
+        -daemonize
+        -pidfile {{ molecule_ephemeral_directory }}/pid-{{ item.name }}.txt
+      loop: "{{ molecule_instances }}"
+      loop_control:
+        label: "{{ item.name }}"
+      async: 7200
+      poll: 0
+      register: qemu_launch
