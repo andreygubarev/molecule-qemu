@@ -49,11 +49,20 @@
         state: directory
         mode: "0755"
 
+    - name: Clone VMs image
+      ansible.builtin.copy:
+        src: "{{ item.vm_image }}"
+        dest: "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.img"
+        mode: "0644"
+      loop: "{{ molecule_instances }}"
+      loop_control:
+        label: "{{ item.name }}"
+
     - name: Launch VMs  # noqa: no-changed-when
       ansible.builtin.command: >
         qemu-system-{{ item.vm_arch }}
         -m {{ item.vm_memory }}
-        -hda {{ item.vm_image }}
+        -hda {{ molecule_ephemeral_directory }}/run/{{ item.name }}.img
         -net user,hostfwd=tcp::{{ item.vm_ssh_port }}-:22
         -net nic
         -display none
