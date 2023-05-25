@@ -29,6 +29,22 @@
       loop_control:
         label: "{{ item.item.name }}"
 
+    - name: Delete PID files
+      ansible.builtin.file:
+        path: "{{ item.pidfile }}"
+        state: absent
+      loop: "{{ instance_conf }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Destroy VMs disks
+      ansible.builtin.file:
+        path: "{{ item.diskfile }}"
+        state: absent
+      loop: "{{ instance_conf }}"
+      loop_control:
+        label: "{{ item.name }}"
+
     - name: Prepare VMs config list
       ansible.builtin.set_fact:
         instance_conf: {}
