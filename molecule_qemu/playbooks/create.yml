@@ -8,25 +8,29 @@
     molecule_ephemeral_directory: "{{ lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}"
     molecule_scenario_name: "{{ lookup('env', 'MOLECULE_SCENARIO_NAME') }}"
     molecule_project_name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
-    qemu_vm_arch: "x86_64"
-    qemu_vm_memory: "1024"
-    qemu_vm_support_hvf: false
+    qemu_host_capability_hvf: false
+    qemu_guest_image_arch: "x86_64"
+    qemu_guest_image_format: "qcow2"
+    qemu_guest_memory: "1024"
+    qemu_guest_cpus: "1"
 
   tasks:
+    ### configuration #########################################################
     - name: Register VMs data
       ansible.builtin.set_fact:
         instance: {
           "instance": "molecule-{{ molecule_project_name }}-{{ molecule_scenario_name }}-{{ item.name }}",
           "name": "{{ item.name }}",
-          "vm_arch": "{{ item.vm_arch | default(qemu_vm_arch) }}",
-          "vm_image": "{{ item.vm_image }}",
-          "vm_image_format": "{{ item.vm_image_format | default('qcow2') }}",
-          "vm_memory": "{{ item.vm_memory | default(qemu_vm_memory) }}",
-          "vm_ssh_host": "{{ item.vm_ssh_host | default('127.0.0.1') }}",
-          "vm_ssh_port": "{{ item.vm_ssh_port | default(10022) }}",
-          "vm_ssh_user": "{{ item.vm_ssh_user | default('debian') }}",
-          "vm_run_pidfile": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.pid",
-          "vm_run_diskfile": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.qcow2",
+          "image": "{{ item.vm_image }}",
+          "image_arch": "{{ item.vm_image_arch | default(qemu_guest_image_arch) }}",
+          "image_format": "{{ item.vm_image_format | default(qemu_guest_image_format) }}",
+          "path_disk": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.qcow2",
+          "path_pid": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.pid",
+          "ssh_host": "{{ item.ssh_host | default('127.0.0.1') }}",
+          "ssh_port": "{{ item.ssh_port | default(10022) }}",
+          "ssh_user": "{{ item.vm_ssh_user | default('debian') }}",
+          "vm_cpus": "{{ item.vm_cpus | default(qemu_guest_cpus) }}",
+          "vm_memory": "{{ item.vm_memory | default(qemu_guest_memory) }}",
         }
       loop: "{{ molecule_yml.platforms }}"
       loop_control:
@@ -37,67 +41,59 @@
       ansible.builtin.set_fact:
         molecule_instances: "{{ molecule_instances.results | map(attribute='ansible_facts.instance') | list }}"
 
-    - name: Validate VMs configuration
+    ### assertions ############################################################
+    - name: Assert VMs configuration
       ansible.builtin.assert:
         that:
           - molecule_instances is defined
           - molecule_instances | length > 0
           - molecule_instances | length == molecule_yml.platforms | length
-          - molecule_instances | map(attribute='vm_ssh_port') | list | unique | length == molecule_instances | length
+          - molecule_instances | map(attribute='ssh_port') | list | unique | length == molecule_instances | length
         fail_msg: "Molecule instances are not properly defined"
         success_msg: "Molecule instances are properly defined"
 
-    - name: Validate supported VMs configuration
+    - name: Assert supported VMs configuration
       ansible.builtin.assert:
         that:
-          - item.vm_arch in ['x86_64', 'aarch64']
+          - item.image_arch in ['x86_64', 'aarch64']
         fail_msg: "Molecule instance {{ item.name }} configuration is not supported"
         success_msg: "Molecule instance {{ item.name }} configuration is supported"
       loop: "{{ molecule_instances }}"
       loop_control:
         label: "{{ item.name }}"
 
+    ### capabilities ##########################################################
+    - name: Read kern.hv_support
+      command: sysctl kern.hv_support
+      register: hv_support
+      changed_when: False
+      ignore_errors: True
+
+    - name: Set hvf support
+      set_fact:
+        qemu_host_capability_hvf: "{{ hv_support.stdout | trim == 'kern.hv_support: 1' }}"
+      when: hv_support is defined
+
+    ### prerequisites #########################################################
     - name: Create run directory
       ansible.builtin.file:
         path: "{{ molecule_ephemeral_directory }}/run/"
         state: directory
         mode: "0755"
 
-    - name: Generate OpenSSH key pair
+    - name: Create OpenSSH key pair
       community.crypto.openssh_keypair:
         path: "{{ molecule_ephemeral_directory }}/run/id_ed25519"
         type: ed25519
-      register: vm_ssh_keypair
+      register: ssh_keypair
 
-    - name: Download bios for ARM VMs
+    - name: Fetch ARM VMs bios
       ansible.builtin.get_url:
         url: "https://releases.linaro.org/components/kernel/uefi-linaro/latest/release/qemu64/QEMU_EFI.fd"
         dest: "{{ molecule_ephemeral_directory }}/run/QEMU_EFI.fd"
-      when: "'aarch64' in molecule_instances | map(attribute='vm_arch') | list | unique"
+      when: "'aarch64' in molecule_instances | map(attribute='image_arch') | list | unique"
 
-    - name: Check kern.hv_support
-      command: sysctl kern.hv_support
-      register: hv_support
-      changed_when: False
-      ignore_errors: True
-
-    - name: Determine hv support
-      set_fact:
-        qemu_vm_support_hvf: "{{ hv_support.stdout | trim == 'kern.hv_support: 1' }}"
-      when: hv_support is defined
-
-    - name: Create VMs disks based on provided image
-      ansible.builtin.command: >
-        qemu-img create
-        -f qcow2
-        -o backing_file={{ item.vm_image }},backing_fmt={{ item.vm_image_format }}
-        {{ item.vm_run_diskfile }}
-      args:
-        creates: "{{ item.vm_run_diskfile }}"
-      loop: "{{ molecule_instances }}"
-      loop_control:
-        label: "{{ item.name }}"
-
+    ### cloud-init ############################################################
     - name: Create cloud-init folders
       ansible.builtin.file:
         path: "{{ molecule_ephemeral_directory }}/run/cloud-init/{{ item.name }}/"
@@ -139,24 +135,37 @@
       loop_control:
         label: "{{ item.name }}"
 
+    ### qemu ##################################################################
+    - name: Create VMs disks
+      ansible.builtin.command: >
+        qemu-img create
+        -f qcow2
+        -o backing_file={{ item.image }},backing_fmt={{ item.image_format }}
+        {{ item.path_disk }}
+      args:
+        creates: "{{ item.path_disk }}"
+      loop: "{{ molecule_instances }}"
+      loop_control:
+        label: "{{ item.name }}"
+
     - name: Launch VMs  # noqa: no-changed-when
       ansible.builtin.command: >
-        qemu-system-{{ item.vm_arch }}
+        qemu-system-{{ item.image_arch }}
         -name {{ item.name }}
         -boot d
         -cdrom {{ molecule_ephemeral_directory }}/run/cloud-init/{{ item.name }}.iso
-        -hda {{ item.vm_run_diskfile }}
+        -hda {{ item.path_disk }}
         -m {{ item.vm_memory }}
         -net nic
-        -net user,hostfwd=tcp::{{ item.vm_ssh_port }}-:22
+        -net user,hostfwd=tcp::{{ item.ssh_port }}-:22
         -display none
         -daemonize
-        -pidfile {{ item.vm_run_pidfile }}
-        {% if item.vm_arch == 'aarch64' %}
+        -pidfile {{ item.path_pid }}
+        {% if item.image_arch == 'aarch64' %}
         -bios {{ molecule_ephemeral_directory }}/run/QEMU_EFI.fd
         -cpu cortex-a72
         -machine virt,highmem=off
-        {% if qemu_vm_support_hvf %}
+        {% if qemu_host_capability_hvf %}
         -accel hvf
         {% endif %}
         {% endif %}
@@ -164,10 +173,11 @@
       loop_control:
         label: "{{ item.name }}"
 
+    ### ssh ###################################################################
     - name: Wait for SSH to be ready
       ansible.builtin.wait_for:
-        host: "{{ item.vm_ssh_host }}"
-        port: "{{ item.vm_ssh_port }}"
+        host: "{{ item.ssh_host }}"
+        port: "{{ item.ssh_port }}"
         delay: 5
         timeout: 180
         search_regex: "OpenSSH"
@@ -189,17 +199,18 @@
       retries: 30
       delay: 10
 
+    ### molecule ##############################################################
     - name: Prepare VMs config dict
       ansible.builtin.set_fact:
         instance_conf_dict: {
           "instance": "{{ item.instance }}",
           "name": "{{ item.name }}",
-          "address": "{{ item.vm_ssh_host }}",
+          "address": "{{ item.ssh_host }}",
           "user": "{{ item.vm_ssh_user }}",
-          "port": "{{ item.vm_ssh_port }}",
-          "identity_file": "{{ vm_ssh_keypair.filename }}",
-          "pidfile": "{{ item.vm_run_pidfile }}",
-          "diskfile": "{{ item.vm_run_diskfile }}",
+          "port": "{{ item.ssh_port }}",
+          "identity_file": "{{ ssh_keypair.filename }}",
+          "pidfile": "{{ item.path_pid }}",
+          "diskfile": "{{ item.path_disk }}",
         }
       loop: "{{ molecule_instances }}"
       loop_control:
