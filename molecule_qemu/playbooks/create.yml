@@ -160,6 +160,7 @@
         -cdrom {{ molecule_ephemeral_directory }}/run/cloud-init/{{ item.name }}.iso
         -hda {{ item.path_disk }}
         -m {{ item.vm_memory }}
+        -smp {{ item.vm_cpus }}
         -net nic
         -net user,hostfwd=tcp::{{ item.ssh_port }}-:22
         -display none
