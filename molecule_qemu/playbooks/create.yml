@@ -68,6 +68,11 @@
         type: ed25519
       register: vm_ssh_keypair
 
+    - name: Download bios for ARM VMs
+      ansible.builtin.get_url:
+        url: "https://releases.linaro.org/components/kernel/uefi-linaro/latest/release/qemu64/QEMU_EFI.fd"
+        dest: "{{ molecule_ephemeral_directory }}/run/QEMU_EFI.fd"
+      when: "'aarch64' in molecule_instances | map(attribute='vm_arch') | list | unique"
 
     - name: Create VMs disks based on provided image
       ansible.builtin.command: >
@@ -134,6 +139,12 @@
         -display none
         -daemonize
         -pidfile {{ item.vm_run_pidfile }}
+        {% if item.vm_arch == 'aarch64' %}
+        -bios {{ molecule_ephemeral_directory }}/run/QEMU_EFI.fd
+        -cpu cortex-a72
+        -machine virt,highmem=off
+        -accel hvf
+        {% endif %}
       loop: "{{ molecule_instances }}"
       loop_control:
         label: "{{ item.name }}"
