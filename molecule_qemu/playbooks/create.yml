@@ -56,7 +56,7 @@
       loop_control:
         label: "{{ item.name }}"
 
-    - name: Create run directory exists
+    - name: Create run directory
       ansible.builtin.file:
         path: "{{ molecule_ephemeral_directory }}/run/"
         state: directory
