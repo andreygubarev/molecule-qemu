@@ -68,13 +68,13 @@
 
     ### capabilities ##########################################################
     - name: Read kern.hv_support
-      command: sysctl kern.hv_support
+      ansible.builtin.command: sysctl kern.hv_support
       register: hv_support
-      changed_when: False
-      ignore_errors: True
+      changed_when: false
+      ignore_errors: true
 
     - name: Set hvf support
-      set_fact:
+      ansible.builtin.set_fact:
         qemu_cap_hvf: "{{ hv_support.stdout | trim == 'kern.hv_support: 1' }}"
       when: hv_support is defined
 
@@ -95,6 +95,7 @@
       ansible.builtin.get_url:
         url: "https://releases.linaro.org/components/kernel/uefi-linaro/latest/release/qemu64/QEMU_EFI.fd"
         dest: "{{ molecule_ephemeral_directory }}/run/QEMU_EFI.fd"
+        mode: "0644"
       when: "'aarch64' in molecule_instances | map(attribute='image_arch') | list | unique"
 
     ### cloud-init ############################################################
