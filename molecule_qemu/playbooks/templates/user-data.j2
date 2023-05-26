@@ -1,6 +1,6 @@
 #cloud-config
 ssh_authorized_keys:
-- {{ vm_ssh_keypair.public_key }}
+- {{ ssh_keypair.public_key }}
 
 output:
   all: ">> /var/log/cloud-init-output.log"
