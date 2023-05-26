@@ -179,7 +179,7 @@
         label: "{{ item.name }}"
 
     ### ssh ###################################################################
-    - name: Wait for SSH to be ready
+    - name: Wait for SSH
       ansible.builtin.wait_for:
         host: "{{ item.ssh_host }}"
         port: "{{ item.ssh_port }}"
@@ -193,7 +193,7 @@
       poll: 0
       register: qemu_launch
 
-    - name: Wait for launch jobs to finish
+    - name: Wait for SSH to be ready
       ansible.builtin.async_status:
         jid: "{{ item.ansible_job_id }}"
       loop: "{{ qemu_launch.results }}"
