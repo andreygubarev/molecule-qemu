@@ -21,16 +21,20 @@
         instance: {
           "instance": "molecule-{{ molecule_project_name }}-{{ molecule_scenario_name }}-{{ item.name }}",
           "name": "{{ item.name }}",
-          "image": "{{ item.vm_image }}",
-          "image_arch": "{{ item.vm_image_arch | default(qemu_guest_image_arch) }}",
-          "image_format": "{{ item.vm_image_format | default(qemu_guest_image_format) }}",
-          "path_disk": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.qcow2",
-          "path_pid": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.pid",
+
+          "image": "{{ item.image }}",
+          "image_arch": "{{ item.image_arch | default(qemu_guest_image_arch) }}",
+          "image_format": "{{ item.image_format | default(qemu_guest_image_format) }}",
+
           "ssh_host": "{{ item.ssh_host | default('127.0.0.1') }}",
           "ssh_port": "{{ item.ssh_port | default(10022) }}",
-          "ssh_user": "{{ item.vm_ssh_user | default('debian') }}",
+          "ssh_user": "{{ item.ssh_user | default('debian') }}",
+
           "vm_cpus": "{{ item.vm_cpus | default(qemu_guest_cpus) }}",
           "vm_memory": "{{ item.vm_memory | default(qemu_guest_memory) }}",
+
+          "path_disk": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.qcow2",
+          "path_pid": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.pid",
         }
       loop: "{{ molecule_yml.platforms }}"
       loop_control:
@@ -206,7 +210,7 @@
           "instance": "{{ item.instance }}",
           "name": "{{ item.name }}",
           "address": "{{ item.ssh_host }}",
-          "user": "{{ item.vm_ssh_user }}",
+          "user": "{{ item.ssh_user }}",
           "port": "{{ item.ssh_port }}",
           "identity_file": "{{ ssh_keypair.filename }}",
           "pidfile": "{{ item.path_pid }}",
