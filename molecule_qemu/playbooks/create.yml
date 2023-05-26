@@ -32,6 +32,30 @@
         label: "{{ item.name }}"
       register: molecule_instances
 
+    - name: Prepare VMs data
+      ansible.builtin.set_fact:
+        molecule_instances: "{{ molecule_instances.results | map(attribute='ansible_facts.instance') | list }}"
+
+    - name: Validate VMs configuration
+      ansible.builtin.assert:
+        that:
+          - molecule_instances is defined
+          - molecule_instances | length > 0
+          - molecule_instances | length == molecule_yml.platforms | length
+          - molecule_instances | map(attribute='vm_ssh_port') | list | unique | length == molecule_instances | length
+        fail_msg: "Molecule instances are not properly defined"
+        success_msg: "Molecule instances are properly defined"
+
+    - name: Validate supported VMs configuration
+      ansible.builtin.assert:
+        that:
+          - item.vm_arch in ['x86_64', 'aarch64']
+        fail_msg: "Molecule instance {{ item.name }} configuration is not supported"
+        success_msg: "Molecule instance {{ item.name }} configuration is supported"
+      loop: "{{ molecule_instances }}"
+      loop_control:
+        label: "{{ item.name }}"
+
     - name: Create run directory exists
       ansible.builtin.file:
         path: "{{ molecule_ephemeral_directory }}/run/"
@@ -44,9 +68,6 @@
         type: ed25519
       register: vm_ssh_keypair
 
-    - name: Prepare VMs data
-      ansible.builtin.set_fact:
-        molecule_instances: "{{ molecule_instances.results | map(attribute='ansible_facts.instance') | list }}"
 
     - name: Create VMs disks based on provided image
       ansible.builtin.command: >
