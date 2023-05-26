@@ -8,11 +8,11 @@
     molecule_ephemeral_directory: "{{ lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}"
     molecule_scenario_name: "{{ lookup('env', 'MOLECULE_SCENARIO_NAME') }}"
     molecule_project_name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
-    qemu_host_capability_hvf: false
-    qemu_guest_image_arch: "x86_64"
-    qemu_guest_image_format: "qcow2"
-    qemu_guest_memory: "1024"
-    qemu_guest_cpus: "1"
+    qemu_cap_hvf: false
+    qemu_vm_image_arch: "x86_64"
+    qemu_vm_image_format: "qcow2"
+    qemu_vm_memory: "1024"
+    qemu_vm_cpus: "1"
 
   tasks:
     ### configuration #########################################################
@@ -23,15 +23,15 @@
           "name": "{{ item.name }}",
 
           "image": "{{ item.image }}",
-          "image_arch": "{{ item.image_arch | default(qemu_guest_image_arch) }}",
-          "image_format": "{{ item.image_format | default(qemu_guest_image_format) }}",
+          "image_arch": "{{ item.image_arch | default(qemu_vm_image_arch) }}",
+          "image_format": "{{ item.image_format | default(qemu_vm_image_format) }}",
 
           "ssh_host": "{{ item.ssh_host | default('127.0.0.1') }}",
           "ssh_port": "{{ item.ssh_port | default(10022) }}",
           "ssh_user": "{{ item.ssh_user }}",
 
-          "vm_cpus": "{{ item.vm_cpus | default(qemu_guest_cpus) }}",
-          "vm_memory": "{{ item.vm_memory | default(qemu_guest_memory) }}",
+          "vm_cpus": "{{ item.vm_cpus | default(qemu_vm_cpus) }}",
+          "vm_memory": "{{ item.vm_memory | default(qemu_vm_memory) }}",
 
           "path_disk": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.qcow2",
           "path_pid": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.pid",
@@ -75,7 +75,7 @@
 
     - name: Set hvf support
       set_fact:
-        qemu_host_capability_hvf: "{{ hv_support.stdout | trim == 'kern.hv_support: 1' }}"
+        qemu_cap_hvf: "{{ hv_support.stdout | trim == 'kern.hv_support: 1' }}"
       when: hv_support is defined
 
     ### prerequisites #########################################################
@@ -170,7 +170,7 @@
         -bios {{ molecule_ephemeral_directory }}/run/QEMU_EFI.fd
         -cpu cortex-a72
         -machine virt,highmem=off
-        {% if qemu_host_capability_hvf %}
+        {% if qemu_cap_hvf %}
         -accel hvf
         {% endif %}
         {% endif %}
