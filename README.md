@@ -13,6 +13,7 @@ Install QEMU and CDRTools on macOS:
 ```bash
 brew install qemu cdrtools
 ```
+
 Supported platforms:
 * MacOS 13.x (aaarch64)
 
