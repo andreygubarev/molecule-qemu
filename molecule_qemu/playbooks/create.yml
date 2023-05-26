@@ -28,7 +28,7 @@
 
           "ssh_host": "{{ item.ssh_host | default('127.0.0.1') }}",
           "ssh_port": "{{ item.ssh_port | default(10022) }}",
-          "ssh_user": "{{ item.ssh_user | default('debian') }}",
+          "ssh_user": "{{ item.ssh_user }}",
 
           "vm_cpus": "{{ item.vm_cpus | default(qemu_guest_cpus) }}",
           "vm_memory": "{{ item.vm_memory | default(qemu_guest_memory) }}",
