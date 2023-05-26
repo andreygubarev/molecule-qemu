@@ -12,7 +12,7 @@
     qemu_vm_image_arch: "x86_64"
     qemu_vm_image_format: "qcow2"
     qemu_vm_memory: "1024"
-    qemu_vm_cpus: "1"
+    qemu_vm_cpus: "2"
 
   tasks:
     ### configuration #########################################################
@@ -98,6 +98,33 @@
         mode: "0644"
       when: "'aarch64' in molecule_instances | map(attribute='image_arch') | list | unique"
 
+    ### images ###############################################################
+    - name: Create images directory
+      ansible.builtin.file:
+        path: "{{ molecule_ephemeral_directory }}/run/images/"
+        state: directory
+        mode: "0755"
+
+    - name: Fetch images
+      ansible.builtin.get_url:
+        url: "{{ item }}"
+        dest: "{{ molecule_ephemeral_directory }}/run/images/{{ item | basename }}"
+        mode: "0644"
+      loop: "{{ molecule_instances | map(attribute='image') | list | unique }}"
+      loop_control:
+        label: "{{ item | basename }}"
+      register: images
+
+    - name: Set images cache
+      ansible.builtin.set_fact:
+        images: "{{ images.results | map(attribute='item') | list | zip(images.results | map(attribute='dest') | list) }}"
+        images_cache: {}
+
+    - name: Set images mapping
+      ansible.builtin.set_fact:
+        images_cache: "{{ images_cache | combine({item[0]: item[1]}) }}"
+      loop: "{{ images }}"
+
     ### cloud-init ############################################################
     - name: Create cloud-init folders
       ansible.builtin.file:
@@ -145,7 +172,7 @@
       ansible.builtin.command: >
         qemu-img create
         -f qcow2
-        -o backing_file={{ item.image }},backing_fmt={{ item.image_format }}
+        -o backing_file={{ images_cache[item.image] }},backing_fmt={{ item.image_format }}
         {{ item.path_disk }}
       args:
         creates: "{{ item.path_disk }}"
