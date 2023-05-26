@@ -10,6 +10,7 @@
     molecule_project_name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
     qemu_vm_arch: "x86_64"
     qemu_vm_memory: "1024"
+    qemu_vm_support_hvf: false
 
   tasks:
     - name: Register VMs data
@@ -74,6 +75,17 @@
         dest: "{{ molecule_ephemeral_directory }}/run/QEMU_EFI.fd"
       when: "'aarch64' in molecule_instances | map(attribute='vm_arch') | list | unique"
 
+    - name: Check kern.hv_support
+      command: sysctl kern.hv_support
+      register: hv_support
+      changed_when: False
+      ignore_errors: True
+
+    - name: Determine hv support
+      set_fact:
+        qemu_vm_support_hvf: "{{ hv_support.stdout | trim == 'kern.hv_support: 1' }}"
+      when: hv_support is defined
+
     - name: Create VMs disks based on provided image
       ansible.builtin.command: >
         qemu-img create
@@ -130,6 +142,7 @@
     - name: Launch VMs  # noqa: no-changed-when
       ansible.builtin.command: >
         qemu-system-{{ item.vm_arch }}
+        -name {{ item.name }}
         -boot d
         -cdrom {{ molecule_ephemeral_directory }}/run/cloud-init/{{ item.name }}.iso
         -hda {{ item.vm_run_diskfile }}
@@ -143,7 +156,9 @@
         -bios {{ molecule_ephemeral_directory }}/run/QEMU_EFI.fd
         -cpu cortex-a72
         -machine virt,highmem=off
+        {% if qemu_vm_support_hvf %}
         -accel hvf
+        {% endif %}
         {% endif %}
       loop: "{{ molecule_instances }}"
       loop_control:
