@@ -12,18 +12,6 @@
     qemu_vm_memory: "1024"
 
   tasks:
-    - name: Create run directory exists
-      ansible.builtin.file:
-        path: "{{ molecule_ephemeral_directory }}/run/"
-        state: directory
-        mode: "0755"
-
-    - name: Generate OpenSSH key pair
-      community.crypto.openssh_keypair:
-        path: "{{ molecule_ephemeral_directory }}/run/id_ed25519"
-        type: ed25519
-      register: vm_ssh_keypair
-
     - name: Register VMs data
       ansible.builtin.set_fact:
         instance: {
@@ -43,6 +31,18 @@
       loop_control:
         label: "{{ item.name }}"
       register: molecule_instances
+
+    - name: Create run directory exists
+      ansible.builtin.file:
+        path: "{{ molecule_ephemeral_directory }}/run/"
+        state: directory
+        mode: "0755"
+
+    - name: Generate OpenSSH key pair
+      community.crypto.openssh_keypair:
+        path: "{{ molecule_ephemeral_directory }}/run/id_ed25519"
+        type: ed25519
+      register: vm_ssh_keypair
 
     - name: Prepare VMs data
       ansible.builtin.set_fact:
