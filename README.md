@@ -28,17 +28,17 @@ driver:
   name: molecule-qemu
 platforms:
   - name: ubuntu-1
-    image: ~/Downloads/focal-server-cloudimg-arm64.img
+    image: file:///Users/andrey/Downloads/focal-server-cloudimg-arm64.img
     image_arch: aarch64
     ssh_port: 10022
     ssh_user: ubuntu
   - name: ubuntu-2
-    image: ~/Downloads/focal-server-cloudimg-amd64.img
+    image: file:///Users/andrey/Downloads/focal-server-cloudimg-amd64.img
     image_arch: x86_64  # default
     ssh_port: 10023
     ssh_user: ubuntu
   - name: debian-1
-    image: ~/Downloads/debian-11-generic-amd64.qcow2
+    image: file:///Users/andrey/Downloads/debian-11-generic-amd64.qcow2
     image_arch: x86_64  # default
     ssh_port: 10024
     ssh_user: debian
