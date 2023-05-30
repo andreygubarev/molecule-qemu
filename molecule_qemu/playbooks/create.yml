@@ -6,6 +6,7 @@
 
   vars:
     molecule_ephemeral_directory: "{{ lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}"
+    molecule_driver_directory: "{{ ( molecule_ephemeral_directory + '/../../.qemu/' ) | realpath }}"
     molecule_scenario_name: "{{ lookup('env', 'MOLECULE_SCENARIO_NAME') }}"
     molecule_project_name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
     qemu_cap_hvf: false
@@ -79,6 +80,13 @@
       when: hv_support is defined
 
     ### prerequisites #########################################################
+
+    - name: Create driver directory
+      ansible.builtin.file:
+        path: "{{ molecule_driver_directory }}"
+        state: directory
+        mode: "0755"
+
     - name: Create run directory
       ansible.builtin.file:
         path: "{{ molecule_ephemeral_directory }}/run/"
@@ -94,21 +102,21 @@
     - name: Fetch ARM VMs bios
       ansible.builtin.get_url:
         url: "https://releases.linaro.org/components/kernel/uefi-linaro/latest/release/qemu64/QEMU_EFI.fd"
-        dest: "{{ molecule_ephemeral_directory }}/run/QEMU_EFI.fd"
+        dest: "{{ molecule_driver_directory }}/QEMU_EFI.fd"
         mode: "0644"
       when: "'aarch64' in molecule_instances | map(attribute='image_arch') | list | unique"
 
     ### images ###############################################################
     - name: Create images directory
       ansible.builtin.file:
-        path: "{{ molecule_ephemeral_directory }}/run/images/"
+        path: "{{ molecule_driver_directory }}/images/"
         state: directory
         mode: "0755"
 
     - name: Fetch images
       ansible.builtin.get_url:
         url: "{{ item }}"
-        dest: "{{ molecule_ephemeral_directory }}/run/images/{{ item | basename }}"
+        dest: "{{ molecule_driver_directory }}/images/"
         mode: "0644"
       loop: "{{ molecule_instances | map(attribute='image') | list | unique }}"
       loop_control:
@@ -197,7 +205,7 @@
         -daemonize
         -pidfile {{ item.path_pid }}
         {% if item.image_arch == 'aarch64' %}
-        -bios {{ molecule_ephemeral_directory }}/run/QEMU_EFI.fd
+        -bios {{ molecule_driver_directory }}/QEMU_EFI.fd
         -cpu cortex-a72
         -machine virt,highmem=off
         {% if qemu_cap_hvf %}
