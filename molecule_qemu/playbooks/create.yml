@@ -24,6 +24,7 @@
           "name": "{{ item.name }}",
 
           "image": "{{ item.image }}",
+          "image_checksum": "{{ item.image_checksum | default(omit) }}",
           "image_arch": "{{ item.image_arch | default(qemu_vm_image_arch) }}",
           "image_format": "{{ item.image_format | default(qemu_vm_image_format) }}",
 
@@ -116,17 +117,18 @@
 
     - name: Fetch images
       ansible.builtin.get_url:
-        url: "{{ item }}"
-        dest: "{{ molecule_driver_directory }}/images/"
+        url: "{{ item[0] }}"
+        checksum: "{{ item[1] }}"
+        dest: "{{ molecule_driver_directory }}/images/{{ item[0] | basename }}"
         mode: "0644"
-      loop: "{{ molecule_instances | map(attribute='image') | list | unique }}"
+      loop: "{{ molecule_instances | map(attribute='image') | zip(molecule_instances | map(attribute='image_checksum')) | list | unique }}"
       loop_control:
-        label: "{{ item | basename }}"
+        label: "{{ item[0] | basename }}"
       register: images
 
     - name: Get images
       ansible.builtin.set_fact:
-        images: "{{ images.results | map(attribute='item') | list | zip(images.results | map(attribute='dest') | list) }}"
+        images: "{{ 0 | extract(images.results | map(attribute='item')) | list | zip(images.results | map(attribute='dest') | list) }}"
         images_cache: {}
 
     - name: Set images cache
