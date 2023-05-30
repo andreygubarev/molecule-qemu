@@ -28,7 +28,7 @@ Support of other platforms and guest OS is possible, but not tested.
 
 ## Example scenario
 ```bash
-molecule init scenario scenario_name -d molecule-qemu
+molecule init scenario default --driver-name molecule-qemu --verifier-name testinfra
 ```
 
 ## Example `molecule.yml`

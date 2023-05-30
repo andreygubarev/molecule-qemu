@@ -182,7 +182,7 @@
       loop_control:
         label: "{{ item.name }}"
 
-    - name: Launch VMs  # noqa: no-changed-when
+    - name: Launch VMs
       ansible.builtin.command: >
         qemu-system-{{ item.image_arch }}
         -name {{ item.name }}
@@ -204,6 +204,8 @@
         -accel hvf
         {% endif %}
         {% endif %}
+      args:
+        creates: "{{ item.path_pid }}"
       loop: "{{ molecule_instances }}"
       loop_control:
         label: "{{ item.name }}"
