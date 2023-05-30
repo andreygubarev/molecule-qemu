@@ -14,6 +14,7 @@
     qemu_vm_image_format: "qcow2"
     qemu_vm_memory: "1024"
     qemu_vm_cpus: "2"
+    qemu_vm_disk: "4G"
 
   tasks:
     ### configuration #########################################################
@@ -34,6 +35,7 @@
 
           "vm_cpus": "{{ item.vm_cpus | default(qemu_vm_cpus) }}",
           "vm_memory": "{{ item.vm_memory | default(qemu_vm_memory) }}",
+          "vm_disk": "{{ item.vm_disk | default(qemu_vm_disk) }}",
 
           "path_disk": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.qcow2",
           "path_pid": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.pid",
@@ -187,6 +189,7 @@
         -f qcow2
         -o backing_file={{ images_cache[item.image] }},backing_fmt={{ item.image_format }}
         {{ item.path_disk }}
+        {{ item.vm_disk }}
       args:
         creates: "{{ item.path_disk }}"
       loop: "{{ molecule_instances }}"
