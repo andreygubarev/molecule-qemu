@@ -269,7 +269,7 @@
           molecule_instances_ipv4_output: "{{ molecule_instances | map(attribute='name') | list | zip(molecule_instances_ipv4_output.results | map(attribute='stdout') | list) }}"
           molecule_instances_ipv4: {}
 
-      - name: Convert list of lists to dictionary
+      - name: Create mapping for instances IPv4
         set_fact:
           molecule_instances_ipv4: "{{ molecule_instances_ipv4 | combine({item[0]: item[1]}) }}"
         loop: "{{ molecule_instances_ipv4_output }}"
