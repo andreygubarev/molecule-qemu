@@ -78,8 +78,8 @@
       ansible.builtin.assert:
         that:
           - molecule_instances | map(attribute='vm_network') | list | unique | length == 1
-        fail_msg: "Molecule instances are not the same network"
-        success_msg: "Molecule instances networks are properly defined"
+        fail_msg: "Network modes are mutually exclusive"
+        success_msg: "Network modes are configured properly"
 
     - name: Set QEMU network
       ansible.builtin.set_fact:
