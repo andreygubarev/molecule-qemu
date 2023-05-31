@@ -71,3 +71,8 @@ verifier:
 * [Ansible](https://www.ansible.com/)
 * [Molecule](https://molecule.readthedocs.io/en/latest/)
 * [QEMU](https://www.qemu.org/)
+
+## QEMU vmnet-shared networking
+
+* [vmnet.framework modes](https://lore.kernel.org/all/20220315230741.21578-7-Vladislav.Yaroshchuk@jetbrains.com/T/)
+
