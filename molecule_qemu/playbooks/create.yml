@@ -19,6 +19,7 @@
 
   tasks:
     ### configuration #########################################################
+
     - name: Register VMs data
       ansible.builtin.set_fact:
         instance: {
@@ -53,6 +54,7 @@
         molecule_instances: "{{ molecule_instances.results | map(attribute='ansible_facts.instance') | list }}"
 
     ### assertions ############################################################
+
     - name: Assert VMs configuration
       ansible.builtin.assert:
         that:
@@ -75,6 +77,7 @@
         label: "{{ item.name }}"
 
     ### capabilities ##########################################################
+
     - name: Read kern.hv_support
       ansible.builtin.command: sysctl kern.hv_support
       register: hv_support
