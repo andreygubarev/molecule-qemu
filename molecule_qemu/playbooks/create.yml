@@ -232,6 +232,26 @@
       loop_control:
         label: "{{ item.name }}"
 
+    - name: Pause for 15 seconds
+      ansible.builtin.pause:
+        seconds: 15
+
+    - name: Set VMs IPv4
+      ansible.builtin.shell: >-
+        arp -an
+        | grep -i '{{ item.vm_network_mac }}'
+        | awk '{print $2}'
+        | sed 's/[()]//g'
+      loop: "{{ molecule_instances }}"
+      loop_control:
+        label: "{{ item.name }}"
+      register: molecule_instances_ipv4
+
+    - name: Create mapping for instances IPv4
+      ansible.builtin.set_fact:
+        molecule_instances_ipv4: "{{ molecule_instances_ipv4.results | map(attribute='stdout') | list | zip(molecule_instances | map(attribute='name') | list) }}"
+      register: molecule_instances_ipv4
+
     ### ssh ###################################################################
     - name: Wait for SSH
       ansible.builtin.wait_for:
