@@ -245,8 +245,7 @@
 
     - name: Create mapping for instances IPv4
       ansible.builtin.set_fact:
-        molecule_instances_ipv4: "{{ molecule_instances_ipv4.results | map(attribute='stdout') | list | zip(molecule_instances | map(attribute='name') | list) }}"
-      register: molecule_instances_ipv4
+        molecule_instances_ipv4: "{{ molecule_instances | map(attribute='name') | list | zip(molecule_instances_ipv4.results | map(attribute='stdout') | list) }}"
 
     ### ssh ###################################################################
     - name: Wait for SSH
