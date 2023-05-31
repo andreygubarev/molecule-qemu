@@ -26,6 +26,8 @@ Support of other platforms and guest OS is possible, but not tested. Please, ope
 
 ## Network modes
 
+Network mode is selected by setting `vm_network` in `molecule.yml`. Supported modes are: `user` and `vmnet-shared`. Default mode is `user`. All modes are mutually exclusive.
+
 ### `user` network mode
 
 This is the default network mode. It uses QEMU's user networking mode.
