@@ -18,8 +18,7 @@ Supported platforms:
 * MacOS 13.x (aaarch64)
 
 Support guest OS:
-* Ubuntu 20.04 LTS (aarch64)
-* Ubuntu 20.04 LTS (x86_64)
+* Ubuntu 20.04 LTS (aarch64, x86_64)
 * Debian 11 (x86_64)
 
 Support of other platforms and guest OS is possible, but not tested. Please, open an issue if you want to add support for other platforms.
@@ -68,12 +67,6 @@ platforms:
     image_arch: x86_64  # default
     ssh_port: 10023
     ssh_user: ubuntu
-  - name: debian-1
-    image: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-arm64.img
-    image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
-    image_arch: x86_64  # default
-    ssh_port: 10024
-    ssh_user: debian
 provisioner:
   name: ansible
 verifier:
@@ -100,12 +93,6 @@ platforms:
     image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
     image_arch: x86_64  # default
     ssh_user: ubuntu
-    vm_network: vmnet-shared
-  - name: debian-1
-    image: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-arm64.img
-    image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
-    image_arch: x86_64  # default
-    ssh_user: debian
     vm_network: vmnet-shared
 provisioner:
   name: ansible
