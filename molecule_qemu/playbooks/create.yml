@@ -272,28 +272,23 @@
 
     - name: Configure QEMU network (vmnet-shared)
       block:
-      - name: Set VMs IPv4 (vmnet-shared)
+      - name: Get IPv4 addresses from ARP table (vmnet-shared)
         ansible.builtin.shell: >-
           arp -an | grep -i '{{ item.vm_network_mac }}' | awk '{print $2}' | sed 's/[()]//g'
-        until: molecule_instances_ipv4_output.stdout | length > 0
+        until: molecule_instances_arp.stdout | length > 0
         retries: 30
         delay: 1
         loop: "{{ molecule_instances }}"
         loop_control:
           label: "{{ item.name }}"
-        register: molecule_instances_ipv4_output
+        register: molecule_instances_arp
 
-      - name: Create data for instances IPv4 (vmnet-shared)
+      - name: Create instances IPv4 dict (vmnet-shared)
         ansible.builtin.set_fact:
-          molecule_instances_ipv4_output: "{{ molecule_instances | map(attribute='name') | list | zip(molecule_instances_ipv4_output.results | map(attribute='stdout') | list) }}"
-          molecule_instances_ipv4: {}
-
-      - name: Create mapping for instances IPv4 (vmnet-shared)
-        set_fact:
-          molecule_instances_ipv4: "{{ molecule_instances_ipv4 | combine({item[0]: item[1]}) }}"
-        loop: "{{ molecule_instances_ipv4_output }}"
+          molecule_instances_ipv4: "{{ molecule_instances_ipv4 | combine({item.item.name: item.stdout}) }}"
+        loop: "{{ molecule_instances_arp.results }}"
         loop_control:
-          label: "{{ item[0] }}"
+          label: "{{ item.item.name }}"
 
       when: qemu_vm_network == 'vmnet-shared'
 
