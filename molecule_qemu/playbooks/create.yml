@@ -129,6 +129,7 @@
       when: "'aarch64' in molecule_instances | map(attribute='image_arch') | list | unique"
 
     ### images ###############################################################
+
     - name: Create images directory
       ansible.builtin.file:
         path: "{{ molecule_driver_directory }}/images/"
@@ -159,6 +160,7 @@
         label: "{{ item[0] | basename }}"
 
     ### cloud-init ############################################################
+
     - name: Create cloud-init folders
       ansible.builtin.file:
         path: "{{ molecule_ephemeral_directory }}/run/cloud-init/{{ item.name }}/"
@@ -201,6 +203,7 @@
         label: "{{ item.name }}"
 
     ### qemu ##################################################################
+
     - name: Create VMs disks
       ansible.builtin.command: >
         qemu-img create
@@ -262,6 +265,7 @@
         molecule_instances_ipv4: "{{ molecule_instances | map(attribute='name') | list | zip(molecule_instances_ipv4.results | map(attribute='stdout') | list) }}"
 
     ### ssh ###################################################################
+
     - name: Wait for SSH
       ansible.builtin.wait_for:
         host: "{{ item.ssh_host }}"
@@ -288,6 +292,7 @@
       delay: 10
 
     ### molecule ##############################################################
+
     - name: Prepare VMs config dict
       ansible.builtin.set_fact:
         instance_conf_dict: {
