@@ -259,7 +259,7 @@
 
     - name: Configure QEMU network (vmnet-shared)
       block:
-      - name: Set VMs IPv4
+      - name: Set VMs IPv4 (vmnet-shared)
         ansible.builtin.shell: >-
           arp -an | grep -i '{{ item.vm_network_mac }}' | awk '{print $2}' | sed 's/[()]//g'
         until: molecule_instances_ipv4_output.stdout | length > 0
@@ -270,12 +270,12 @@
           label: "{{ item.name }}"
         register: molecule_instances_ipv4_output
 
-      - name: Create data for instances IPv4
+      - name: Create data for instances IPv4 (vmnet-shared)
         ansible.builtin.set_fact:
           molecule_instances_ipv4_output: "{{ molecule_instances | map(attribute='name') | list | zip(molecule_instances_ipv4_output.results | map(attribute='stdout') | list) }}"
           molecule_instances_ipv4: {}
 
-      - name: Create mapping for instances IPv4
+      - name: Create mapping for instances IPv4 (vmnet-shared)
         set_fact:
           molecule_instances_ipv4: "{{ molecule_instances_ipv4 | combine({item[0]: item[1]}) }}"
         loop: "{{ molecule_instances_ipv4_output }}"
@@ -288,11 +288,11 @@
 
     - name: Configure QEMU network (user)
       block:
-      - name: Create data for instances IPv4
+      - name: Create data for instances IPv4 (user)
         ansible.builtin.set_fact:
           molecule_instances_ipv4: {}
 
-      - name: Create mapping for instances IPv4
+      - name: Create mapping for instances IPv4 (user)
         set_fact:
           molecule_instances_ipv4: "{{ molecule_instances_ipv4 | combine({item.name: '127.0.0.1'}) }}"
         loop: "{{ molecule_instances }}"
