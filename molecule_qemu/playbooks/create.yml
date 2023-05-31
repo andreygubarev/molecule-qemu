@@ -197,7 +197,7 @@
         label: "{{ item.name }}"
 
     - name: Launch VMs
-      ansible.builtin.command: >
+      ansible.builtin.command: >-
         qemu-system-{{ item.image_arch }}
         -name {{ item.name }}
         -boot d
