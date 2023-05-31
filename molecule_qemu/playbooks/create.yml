@@ -38,6 +38,7 @@
           "vm_memory": "{{ item.vm_memory | default(qemu_vm_memory) }}",
           "vm_disk": "{{ item.vm_disk | default(qemu_vm_disk) }}",
           "vm_network": "{{ item.vm_network | default(qemu_vm_network) }}",
+          "vm_network_mac": "{{ '52:54:00' | community.general.random_mac(seed=item.name) }}",
 
           "path_disk": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.qcow2",
           "path_pid": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.pid",
