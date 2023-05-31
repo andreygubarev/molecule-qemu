@@ -223,7 +223,12 @@
       loop_control:
         label: "{{ item.name }}"
 
+    - name: Launch VMs as priviliged user
+      ansible.builtin.set_fact:
+        qemu_privileged: "{{ ( qemu_vm_network == 'vmnet-shared' ) | bool }}"
+
     - name: Launch VMs
+      become: "{{ qemu_privileged }}"
       ansible.builtin.command: >-
         qemu-system-{{ item.image_arch }}
         -name {{ item.name }}
@@ -251,6 +256,15 @@
         {% endif %}
       args:
         creates: "{{ item.path_pid }}"
+      loop: "{{ molecule_instances }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Allow read access to VMs pid files
+      become: "{{ qemu_privileged }}"
+      ansible.builtin.file:
+        path: "{{ item.path_pid }}"
+        mode: "0644"
       loop: "{{ molecule_instances }}"
       loop_control:
         label: "{{ item.name }}"
