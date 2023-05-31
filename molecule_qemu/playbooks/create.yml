@@ -31,7 +31,6 @@
           "image_arch": "{{ item.image_arch | default(qemu_vm_image_arch) }}",
           "image_format": "{{ item.image_format | default(qemu_vm_image_format) }}",
 
-          "ssh_host": "{{ item.ssh_host | default('127.0.0.1') }}",
           "ssh_port": "{{ item.ssh_port | default(22) }}",
           "ssh_user": "{{ item.ssh_user }}",
 
@@ -278,11 +277,28 @@
 
       when: qemu_vm_network == 'vmnet-shared'
 
+    ### qemu network: user ####################################################
+
+    - name: Configure QEMU network (user)
+      block:
+      - name: Create data for instances IPv4
+        ansible.builtin.set_fact:
+          molecule_instances_ipv4: {}
+
+      - name: Create mapping for instances IPv4
+        set_fact:
+          molecule_instances_ipv4: "{{ molecule_instances_ipv4 | combine({item.name: '127.0.0.1'}) }}"
+        loop: "{{ molecule_instances }}"
+        loop_control:
+          label: "{{ item.name }}"
+
+      when: qemu_vm_network == 'user'
+
     ### ssh ###################################################################
 
     - name: Wait for SSH
       ansible.builtin.wait_for:
-        host: "{{ item.ssh_host }}"
+        host: "{{ molecule_instances_ipv4[item.name] }}"
         port: "{{ item.ssh_port }}"
         delay: 5
         timeout: 180
@@ -290,20 +306,6 @@
       loop: "{{ molecule_instances }}"
       loop_control:
         label: "{{ item.name }}"
-      async: 300
-      poll: 0
-      register: qemu_launch
-
-    - name: Wait for SSH to be ready
-      ansible.builtin.async_status:
-        jid: "{{ item.ansible_job_id }}"
-      loop: "{{ qemu_launch.results }}"
-      loop_control:
-        label: "{{ item.item.name }}"
-      register: qemu_launch_status
-      until: qemu_launch_status.finished
-      retries: 30
-      delay: 10
 
     ### molecule ##############################################################
 
@@ -312,7 +314,7 @@
         instance_conf_dict: {
           "instance": "{{ item.instance }}",
           "name": "{{ item.name }}",
-          "address": "{{ item.ssh_host }}",
+          "address": "{{ molecule_instances_ipv4[item.name] }}",
           "user": "{{ item.ssh_user }}",
           "port": "{{ item.ssh_port }}",
           "identity_file": "{{ ssh_keypair.filename }}",
