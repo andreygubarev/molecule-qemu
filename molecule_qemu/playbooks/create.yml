@@ -255,6 +255,19 @@
       loop_control:
         label: "{{ item.name }}"
 
+    ### qemu network #########################################################
+
+    - name: Create instances IPv4 empty dict
+      ansible.builtin.set_fact:
+        molecule_instances_ipv4: {}
+
+    - name: Create instances IPv4 dict
+      ansible.builtin.set_fact:
+        molecule_instances_ipv4: "{{ molecule_instances_ipv4 | combine({item.name: '127.0.0.1'}) }}"
+      loop: "{{ molecule_instances }}"
+      loop_control:
+        label: "{{ item.name }}"
+
     ### qemu network: vmnet-shared ############################################
 
     - name: Configure QEMU network (vmnet-shared)
@@ -283,23 +296,6 @@
           label: "{{ item[0] }}"
 
       when: qemu_vm_network == 'vmnet-shared'
-
-    ### qemu network: user ####################################################
-
-    - name: Configure QEMU network (user)
-      block:
-      - name: Create data for instances IPv4 (user)
-        ansible.builtin.set_fact:
-          molecule_instances_ipv4: {}
-
-      - name: Create mapping for instances IPv4 (user)
-        set_fact:
-          molecule_instances_ipv4: "{{ molecule_instances_ipv4 | combine({item.name: '127.0.0.1'}) }}"
-        loop: "{{ molecule_instances }}"
-        loop_control:
-          label: "{{ item.name }}"
-
-      when: qemu_vm_network == 'user'
 
     ### ssh ###################################################################
 
