@@ -15,9 +15,11 @@
     qemu_vm_memory: "1024"
     qemu_vm_cpus: "2"
     qemu_vm_disk: "4G"
+    qemu_vm_network: "user"
 
   tasks:
     ### configuration #########################################################
+
     - name: Register VMs data
       ansible.builtin.set_fact:
         instance: {
@@ -29,13 +31,14 @@
           "image_arch": "{{ item.image_arch | default(qemu_vm_image_arch) }}",
           "image_format": "{{ item.image_format | default(qemu_vm_image_format) }}",
 
-          "ssh_host": "{{ item.ssh_host | default('127.0.0.1') }}",
-          "ssh_port": "{{ item.ssh_port | default(10022) }}",
+          "ssh_port": "{{ item.ssh_port | default(22) }}",
           "ssh_user": "{{ item.ssh_user }}",
 
           "vm_cpus": "{{ item.vm_cpus | default(qemu_vm_cpus) }}",
           "vm_memory": "{{ item.vm_memory | default(qemu_vm_memory) }}",
           "vm_disk": "{{ item.vm_disk | default(qemu_vm_disk) }}",
+          "vm_network": "{{ item.vm_network | default(qemu_vm_network) }}",
+          "vm_network_mac": "{{ '52:54:00' | community.general.random_mac(seed=item.name | to_json | hash('md5')) | regex_replace('(^|:)0([0-9A-Fa-f])', '\\1\\2') }}",
 
           "path_disk": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.qcow2",
           "path_pid": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.pid",
@@ -50,13 +53,13 @@
         molecule_instances: "{{ molecule_instances.results | map(attribute='ansible_facts.instance') | list }}"
 
     ### assertions ############################################################
+
     - name: Assert VMs configuration
       ansible.builtin.assert:
         that:
           - molecule_instances is defined
           - molecule_instances | length > 0
           - molecule_instances | length == molecule_yml.platforms | length
-          - molecule_instances | map(attribute='ssh_port') | list | unique | length == molecule_instances | length
         fail_msg: "Molecule instances are not properly defined"
         success_msg: "Molecule instances are properly defined"
 
@@ -64,13 +67,34 @@
       ansible.builtin.assert:
         that:
           - item.image_arch in ['x86_64', 'aarch64']
+          - item.vm_network in ['user', 'vmnet-shared']
         fail_msg: "Molecule instance {{ item.name }} configuration is not supported"
         success_msg: "Molecule instance {{ item.name }} configuration is supported"
       loop: "{{ molecule_instances }}"
       loop_control:
         label: "{{ item.name }}"
 
+    - name: Assert VMs network configuration
+      ansible.builtin.assert:
+        that:
+          - molecule_instances | map(attribute='vm_network') | list | unique | length == 1
+        fail_msg: "Network modes are mutually exclusive"
+        success_msg: "Network modes are configured properly"
+
+    - name: Set QEMU network
+      ansible.builtin.set_fact:
+        qemu_vm_network: "{{ molecule_instances | map(attribute='vm_network') | list | unique | first }}"
+
+    - name: Assert VMs ssh configuration
+      ansible.builtin.assert:
+        that:
+          - molecule_instances | map(attribute='ssh_port') | list | unique | length == molecule_instances | length
+        fail_msg: "Molecule instances SSH are not properly configured for 'user' network"
+        success_msg: "Molecule instances SSH are properly configured for 'user' network"
+      when: qemu_vm_network == 'user'
+
     ### capabilities ##########################################################
+
     - name: Read kern.hv_support
       ansible.builtin.command: sysctl kern.hv_support
       register: hv_support
@@ -111,6 +135,7 @@
       when: "'aarch64' in molecule_instances | map(attribute='image_arch') | list | unique"
 
     ### images ###############################################################
+
     - name: Create images directory
       ansible.builtin.file:
         path: "{{ molecule_driver_directory }}/images/"
@@ -141,6 +166,7 @@
         label: "{{ item[0] | basename }}"
 
     ### cloud-init ############################################################
+
     - name: Create cloud-init folders
       ansible.builtin.file:
         path: "{{ molecule_ephemeral_directory }}/run/cloud-init/{{ item.name }}/"
@@ -183,6 +209,7 @@
         label: "{{ item.name }}"
 
     ### qemu ##################################################################
+
     - name: Create VMs disks
       ansible.builtin.command: >
         qemu-img create
@@ -196,8 +223,13 @@
       loop_control:
         label: "{{ item.name }}"
 
+    - name: Launch VMs as priviliged user
+      ansible.builtin.set_fact:
+        qemu_privileged: "{{ (qemu_vm_network == 'vmnet-shared') | bool }}"
+
     - name: Launch VMs
-      ansible.builtin.command: >
+      become: "{{ qemu_privileged }}"
+      ansible.builtin.command: >-
         qemu-system-{{ item.image_arch }}
         -name {{ item.name }}
         -boot d
@@ -205,8 +237,12 @@
         -hda {{ item.path_disk }}
         -m {{ item.vm_memory }}
         -smp {{ item.vm_cpus }}
-        -net nic
-        -net user,hostfwd=tcp::{{ item.ssh_port }}-:22
+        {% if item.vm_network == 'vmnet-shared' %}
+        -nic vmnet-shared,model=virtio-net-pci,mac={{ item.vm_network_mac }}
+        {% endif %}
+        {% if item.vm_network == 'user' %}
+        -nic user,hostfwd=tcp::{{ item.ssh_port }}-:22
+        {% endif %}
         -display none
         -daemonize
         -pidfile {{ item.path_pid }}
@@ -224,10 +260,59 @@
       loop_control:
         label: "{{ item.name }}"
 
+    - name: Allow read access to VMs pid files
+      become: "{{ qemu_privileged }}"
+      ansible.builtin.file:
+        path: "{{ item.path_pid }}"
+        mode: "0644"
+      loop: "{{ molecule_instances }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    ### qemu network #########################################################
+
+    - name: Create instances IPv4 empty dict
+      ansible.builtin.set_fact:
+        molecule_instances_ipv4: {}
+
+    - name: Create instances IPv4 dict
+      ansible.builtin.set_fact:
+        molecule_instances_ipv4: "{{ molecule_instances_ipv4 | combine({item.name: '127.0.0.1'}) }}"
+      loop: "{{ molecule_instances }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    ### qemu network: vmnet-shared ############################################
+
+    - name: Configure QEMU network (vmnet-shared)
+      when: qemu_vm_network == 'vmnet-shared'
+      block:
+        - name: Get IPv4 addresses from ARP table (vmnet-shared)
+          ansible.builtin.shell: |
+            set -o pipefail
+            arp -an | grep -i '{{ item.vm_network_mac }}' | awk '{print $2}' | sed 's/[()]//g'
+          until: molecule_instances_arp.stdout | length > 0
+          retries: 30
+          delay: 1
+          loop: "{{ molecule_instances }}"
+          loop_control:
+            label: "{{ item.name }}"
+          register: molecule_instances_arp
+          changed_when: false
+
+        - name: Create instances IPv4 dict (vmnet-shared)
+          ansible.builtin.set_fact:
+            molecule_instances_ipv4: "{{ molecule_instances_ipv4 | combine({item.item.name: item.stdout}) }}"
+          loop: "{{ molecule_instances_arp.results }}"
+          loop_control:
+            label: "{{ item.item.name }}"
+
+
     ### ssh ###################################################################
+
     - name: Wait for SSH
       ansible.builtin.wait_for:
-        host: "{{ item.ssh_host }}"
+        host: "{{ molecule_instances_ipv4[item.name] }}"
         port: "{{ item.ssh_port }}"
         delay: 5
         timeout: 180
@@ -235,33 +320,21 @@
       loop: "{{ molecule_instances }}"
       loop_control:
         label: "{{ item.name }}"
-      async: 300
-      poll: 0
-      register: qemu_launch
-
-    - name: Wait for SSH to be ready
-      ansible.builtin.async_status:
-        jid: "{{ item.ansible_job_id }}"
-      loop: "{{ qemu_launch.results }}"
-      loop_control:
-        label: "{{ item.item.name }}"
-      register: qemu_launch_status
-      until: qemu_launch_status.finished
-      retries: 30
-      delay: 10
 
     ### molecule ##############################################################
+
     - name: Prepare VMs config dict
       ansible.builtin.set_fact:
         instance_conf_dict: {
           "instance": "{{ item.instance }}",
           "name": "{{ item.name }}",
-          "address": "{{ item.ssh_host }}",
+          "address": "{{ molecule_instances_ipv4[item.name] }}",
           "user": "{{ item.ssh_user }}",
           "port": "{{ item.ssh_port }}",
           "identity_file": "{{ ssh_keypair.filename }}",
           "pidfile": "{{ item.path_pid }}",
           "diskfile": "{{ item.path_disk }}",
+          "privileged": "{{ qemu_privileged }}",
         }
       loop: "{{ molecule_instances }}"
       loop_control:

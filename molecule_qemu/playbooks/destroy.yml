@@ -24,6 +24,7 @@
       register: qemu_processes
 
     - name: Destroy running VMs
+      become: "{{ item.item.privileged | default(false) }}"
       ansible.builtin.command: >
         kill {{ item.ansible_facts.pid }}
       changed_when: false
@@ -32,6 +33,7 @@
         label: "{{ item.item.name }}"
 
     - name: Delete PID files
+      become: "{{ item.item.privileged | default(false) }}"
       ansible.builtin.file:
         path: "{{ item.pidfile }}"
         state: absent
