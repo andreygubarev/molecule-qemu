@@ -38,7 +38,7 @@
           "vm_memory": "{{ item.vm_memory | default(qemu_vm_memory) }}",
           "vm_disk": "{{ item.vm_disk | default(qemu_vm_disk) }}",
           "vm_network": "{{ item.vm_network | default(qemu_vm_network) }}",
-          "vm_network_mac": "{{ '52:54:00' | community.general.random_mac(seed=item.name) | regex_replace('(^|:)0([0-9A-Fa-f])', '\\1\\2') }}",
+          "vm_network_mac": "{{ '52:54:00' | community.general.random_mac(seed=item.name | to_json | hash('md5')) | regex_replace('(^|:)0([0-9A-Fa-f])', '\\1\\2') }}",
 
           "path_disk": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.qcow2",
           "path_pid": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.pid",
@@ -225,7 +225,7 @@
 
     - name: Launch VMs as priviliged user
       ansible.builtin.set_fact:
-        qemu_privileged: "{{ ( qemu_vm_network == 'vmnet-shared' ) | bool }}"
+        qemu_privileged: "{{ (qemu_vm_network == 'vmnet-shared') | bool }}"
 
     - name: Launch VMs
       become: "{{ qemu_privileged }}"
@@ -285,26 +285,28 @@
     ### qemu network: vmnet-shared ############################################
 
     - name: Configure QEMU network (vmnet-shared)
-      block:
-      - name: Get IPv4 addresses from ARP table (vmnet-shared)
-        ansible.builtin.shell: >-
-          arp -an | grep -i '{{ item.vm_network_mac }}' | awk '{print $2}' | sed 's/[()]//g'
-        until: molecule_instances_arp.stdout | length > 0
-        retries: 30
-        delay: 1
-        loop: "{{ molecule_instances }}"
-        loop_control:
-          label: "{{ item.name }}"
-        register: molecule_instances_arp
-
-      - name: Create instances IPv4 dict (vmnet-shared)
-        ansible.builtin.set_fact:
-          molecule_instances_ipv4: "{{ molecule_instances_ipv4 | combine({item.item.name: item.stdout}) }}"
-        loop: "{{ molecule_instances_arp.results }}"
-        loop_control:
-          label: "{{ item.item.name }}"
-
       when: qemu_vm_network == 'vmnet-shared'
+      block:
+        - name: Get IPv4 addresses from ARP table (vmnet-shared)
+          ansible.builtin.shell: |
+            set -o pipefail
+            arp -an | grep -i '{{ item.vm_network_mac }}' | awk '{print $2}' | sed 's/[()]//g'
+          until: molecule_instances_arp.stdout | length > 0
+          retries: 30
+          delay: 1
+          loop: "{{ molecule_instances }}"
+          loop_control:
+            label: "{{ item.name }}"
+          register: molecule_instances_arp
+          changed_when: false
+
+        - name: Create instances IPv4 dict (vmnet-shared)
+          ansible.builtin.set_fact:
+            molecule_instances_ipv4: "{{ molecule_instances_ipv4 | combine({item.item.name: item.stdout}) }}"
+          loop: "{{ molecule_instances_arp.results }}"
+          loop_control:
+            label: "{{ item.item.name }}"
+
 
     ### ssh ###################################################################
 
