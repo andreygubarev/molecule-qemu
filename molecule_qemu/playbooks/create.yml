@@ -332,6 +332,7 @@
           "identity_file": "{{ ssh_keypair.filename }}",
           "pidfile": "{{ item.path_pid }}",
           "diskfile": "{{ item.path_disk }}",
+          "privileged": "{{ qemu_privileged }}",
         }
       loop: "{{ molecule_instances }}"
       loop_control:
