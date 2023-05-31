@@ -62,9 +62,15 @@
           - molecule_instances | length > 0
           - molecule_instances | length == molecule_yml.platforms | length
           - molecule_instances | map(attribute='ssh_port') | list | unique | length == molecule_instances | length
-          - molecule_instances | map(attribute='vm_network') | list | unique | length == 1
         fail_msg: "Molecule instances are not properly defined"
         success_msg: "Molecule instances are properly defined"
+
+    - name: Assert VMs network configuration
+      ansible.builtin.assert:
+        that:
+          - molecule_instances | map(attribute='vm_network') | list | unique | length == 1
+        fail_msg: "Molecule instances are not the same network"
+        success_msg: "Molecule instances networks are properly defined"
 
     - name: Assert supported VMs configuration
       ansible.builtin.assert:
