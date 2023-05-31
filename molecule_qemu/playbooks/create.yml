@@ -205,8 +205,7 @@
         -hda {{ item.path_disk }}
         -m {{ item.vm_memory }}
         -smp {{ item.vm_cpus }}
-        -net nic
-        -net user,hostfwd=tcp::{{ item.ssh_port }}-:22
+        -nic user,hostfwd=tcp::{{ item.ssh_port }}-:22
         -display none
         -daemonize
         -pidfile {{ item.path_pid }}
