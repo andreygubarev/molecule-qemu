@@ -22,7 +22,21 @@ Support guest OS:
 * Ubuntu 20.04 LTS (x86_64)
 * Debian 11 (x86_64)
 
-Support of other platforms and guest OS is possible, but not tested.
+Support of other platforms and guest OS is possible, but not tested. Please, open an issue if you want to add support for other platforms.
+
+## Network modes
+
+### `user` network mode
+
+This is the default network mode. It uses QEMU's user networking mode.
+
+Mode is selected by setting `vm_network: user` in `molecule.yml`.
+
+### `vmnet-shared` network mode
+
+This mode uses QEMU's `vmnet-shared` networking mode. It requires `vmnet.framework` to be installed on the host. This mode is only supported on MacOS. It requires *passwordless* `sudo` access for current user.
+
+Mode is selected by setting `vm_network: vmnet-shared` in `molecule.yml`.
 
 # Examples
 
