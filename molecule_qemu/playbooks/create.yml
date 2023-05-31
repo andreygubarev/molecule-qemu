@@ -38,7 +38,7 @@
           "vm_memory": "{{ item.vm_memory | default(qemu_vm_memory) }}",
           "vm_disk": "{{ item.vm_disk | default(qemu_vm_disk) }}",
           "vm_network": "{{ item.vm_network | default(qemu_vm_network) }}",
-          "vm_network_mac": "{{ '52:54:00' | community.general.random_mac(seed=item.name) }}",
+          "vm_network_mac": "{{ '52:54:00' | community.general.random_mac(seed=item.name) | regex_replace('(^|:)0([0-9A-Fa-f])', '\\1\\2') }}",
 
           "path_disk": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.qcow2",
           "path_pid": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.pid",
@@ -210,7 +210,7 @@
         -m {{ item.vm_memory }}
         -smp {{ item.vm_cpus }}
         {% if item.vm_network == 'vmnet-shared' %}
-        -nic vmnet-shared,model=virtio-net-pci,mac={{ '52:54:00' | community.general.random_mac(seed=item.name) }}
+        -nic vmnet-shared,model=virtio-net-pci,mac={{ item.vm_network_mac }}
         {% endif %}
         {% if item.vm_network == 'user' %}
         -nic user,hostfwd=tcp::{{ item.ssh_port }}-:22
