@@ -31,7 +31,7 @@
           "image_format": "{{ item.image_format | default(qemu_vm_image_format) }}",
 
           "ssh_host": "{{ item.ssh_host | default('127.0.0.1') }}",
-          "ssh_port": "{{ item.ssh_port | default(10022) }}",
+          "ssh_port": "{{ item.ssh_port | default(22) }}",
           "ssh_user": "{{ item.ssh_user }}",
 
           "vm_cpus": "{{ item.vm_cpus | default(qemu_vm_cpus) }}",
