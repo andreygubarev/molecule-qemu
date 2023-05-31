@@ -207,7 +207,7 @@
         -m {{ item.vm_memory }}
         -smp {{ item.vm_cpus }}
         {% if qemu_vm_network == 'shared' %}
-        -nic vmnet-shared,model=virtio-net-device,mac={{ '52:54:00' | community.general.random_mac(seed=item.name) }}
+        -nic vmnet-shared,model=virtio-net-pci,mac={{ '52:54:00' | community.general.random_mac(seed=item.name) }}
         {% endif %}
         {% if qemu_vm_network == 'user' %}
         -nic user,hostfwd=tcp::{{ item.ssh_port }}-:22
