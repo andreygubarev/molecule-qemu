@@ -232,16 +232,12 @@
       loop_control:
         label: "{{ item.name }}"
 
-    - name: Pause for 15 seconds
-      ansible.builtin.pause:
-        seconds: 15
-
     - name: Set VMs IPv4
       ansible.builtin.shell: >-
-        arp -an
-        | grep -i '{{ item.vm_network_mac }}'
-        | awk '{print $2}'
-        | sed 's/[()]//g'
+        arp -an | grep -i '{{ item.vm_network_mac }}' | awk '{print $2}' | sed 's/[()]//g'
+      until: molecule_instances_ipv4.stdout | length > 0
+      retries: 30
+      delay: 1
       loop: "{{ molecule_instances }}"
       loop_control:
         label: "{{ item.name }}"
