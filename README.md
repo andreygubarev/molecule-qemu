@@ -31,7 +31,8 @@ Support of other platforms and guest OS is possible, but not tested.
 molecule init scenario default --driver-name molecule-qemu --verifier-name testinfra
 ```
 
-## Example `molecule.yml`
+## Example `molecule.yml` for `user` network mode
+
 ```yaml
 ---
 dependency:
@@ -40,21 +41,56 @@ driver:
   name: molecule-qemu
 platforms:
   - name: ubuntu-1
-    image: file:///Users/andrey/Downloads/focal-server-cloudimg-arm64.img
+    image: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-arm64.img
+    image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
     image_arch: aarch64
     ssh_port: 10022
     ssh_user: ubuntu
   - name: ubuntu-2
-    image: file:///Users/andrey/Downloads/focal-server-cloudimg-amd64.img
+    image: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-arm64.img
+    image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
     image_arch: x86_64  # default
     ssh_port: 10023
     ssh_user: ubuntu
   - name: debian-1
-    image: file:///Users/andrey/Downloads/debian-11-generic-amd64.qcow2
+    image: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-arm64.img
+    image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
     image_arch: x86_64  # default
     ssh_port: 10024
     ssh_user: debian
+provisioner:
+  name: ansible
+verifier:
+  name: ansible
+```
 
+## Example `molecule.yml` for `vmnet-shared` network mode
+
+```yaml
+---
+dependency:
+  name: galaxy
+driver:
+  name: molecule-qemu
+platforms:
+  - name: ubuntu-1
+    image: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-arm64.img
+    image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
+    image_arch: aarch64
+    ssh_user: ubuntu
+    vm_network: vmnet-shared
+  - name: ubuntu-2
+    image: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-arm64.img
+    image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
+    image_arch: x86_64  # default
+    ssh_user: ubuntu
+    vm_network: vmnet-shared
+  - name: debian-1
+    image: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-arm64.img
+    image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
+    image_arch: x86_64  # default
+    ssh_user: debian
+    vm_network: vmnet-shared
 provisioner:
   name: ansible
 verifier:
