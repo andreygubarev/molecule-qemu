@@ -62,6 +62,7 @@
           - molecule_instances | length > 0
           - molecule_instances | length == molecule_yml.platforms | length
           - molecule_instances | map(attribute='ssh_port') | list | unique | length == molecule_instances | length
+          - molecule_instances | map(attribute='vm_network') | list | unique | length == 1
         fail_msg: "Molecule instances are not properly defined"
         success_msg: "Molecule instances are properly defined"
 
