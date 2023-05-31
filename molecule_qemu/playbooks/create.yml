@@ -60,7 +60,6 @@
           - molecule_instances is defined
           - molecule_instances | length > 0
           - molecule_instances | length == molecule_yml.platforms | length
-          - molecule_instances | map(attribute='ssh_port') | list | unique | length == molecule_instances | length
         fail_msg: "Molecule instances are not properly defined"
         success_msg: "Molecule instances are properly defined"
 
@@ -85,6 +84,14 @@
     - name: Set QEMU network
       ansible.builtin.set_fact:
         qemu_vm_network: "{{ molecule_instances | map(attribute='vm_network') | list | unique | first }}"
+
+    - name: Assert VMs ssh configuration
+      ansible.builtin.assert:
+        that:
+          - molecule_instances | map(attribute='ssh_port') | list | unique | length == molecule_instances | length
+        fail_msg: "Molecule instances SSH are not properly configured for 'user' network"
+        success_msg: "Molecule instances SSH are properly configured for 'user' network"
+      when: qemu_vm_network == 'user'
 
     ### capabilities ##########################################################
 
