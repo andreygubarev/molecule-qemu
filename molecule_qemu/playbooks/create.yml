@@ -155,7 +155,7 @@
 
     - name: Get images
       ansible.builtin.set_fact:
-        images: "{{ 0 | extract(images.results | map(attribute='item')) | list | zip(images.results | map(attribute='dest') | list) }}"
+        images: "{{ images.results | map(attribute='url') | zip(images.results | map(attribute='dest')) }}"
         images_cache: {}
 
     - name: Set images cache
