@@ -105,12 +105,15 @@ verifier:
 ## [Ubuntu](https://cloud-images.ubuntu.com/)
 * https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-arm64.img
 * https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
+* https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
 * https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-arm64.img
 * https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+* https://cloud-images.ubuntu.com/jammy/current/SHA256SUMS
 
 ## [Debian](https://cloud.debian.org/images/cloud/)
 * https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2
 * https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
+* https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
 
 # Reference
 
