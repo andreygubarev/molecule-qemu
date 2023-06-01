@@ -89,7 +89,7 @@ platforms:
     ssh_user: ubuntu
     vm_network: vmnet-shared
   - name: ubuntu-2
-    image: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-arm64.img
+    image: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
     image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
     image_arch: x86_64  # default
     ssh_user: ubuntu
