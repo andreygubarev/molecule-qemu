@@ -318,8 +318,8 @@
       ansible.builtin.wait_for:
         host: "{{ molecule_instances_ipv4[item.name] }}"
         port: "{{ item.ssh_port }}"
-        delay: 5
-        timeout: "{{ 90 * molecule_instances | length }}"
+        delay: 30
+        timeout: "{{ 60 * molecule_instances | length }}"
         search_regex: "OpenSSH"
       loop: "{{ molecule_instances }}"
       loop_control:
