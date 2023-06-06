@@ -144,6 +144,7 @@ verifier:
 * [Ansible](https://www.ansible.com/)
 * [Molecule](https://molecule.readthedocs.io/en/latest/)
 * [QEMU](https://www.qemu.org/)
+* [QEMU BIOS](https://packages.debian.org/bullseye/qemu-efi-aarch64)
 
 ## QEMU vmnet-shared networking
 
