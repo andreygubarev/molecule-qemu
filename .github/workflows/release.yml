@@ -1,4 +1,4 @@
-name: Main
+name: Github Release
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - "v*.*.*"
 
 jobs:
-  build:
+  release:
     permissions:
       contents: write
     runs-on: ubuntu-latest
