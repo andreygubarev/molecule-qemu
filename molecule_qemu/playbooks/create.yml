@@ -245,7 +245,7 @@
         -nic vmnet-shared,model=virtio-net-pci,mac={{ item.vm_network_mac }}
         {% endif %}
         {% if item.vm_network == 'user' %}
-        -nic user,hostfwd=tcp::{{ item.ssh_port }}-:22
+        -nic user,model=virtio-net-pci,hostfwd=tcp::{{ item.ssh_port }}-:22
         {% endif %}
         -display none
         -daemonize
