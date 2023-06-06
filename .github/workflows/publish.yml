@@ -8,7 +8,7 @@ permissions:
   contents: read
 
 jobs:
-  deploy:
+  publish:
     runs-on: ubuntu-latest
 
     steps:
