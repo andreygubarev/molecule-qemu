@@ -131,10 +131,10 @@
       register: ssh_keypair
 
     - name: Fetch ARM VMs bios
-      ansible.builtin.get_url:
-        url: "https://releases.linaro.org/components/kernel/uefi-linaro/latest/release/qemu64/QEMU_EFI.fd"
-        checksum: "sha256:42f915c44de6858f69ae6f1ffc9eaa3884d1b2ca97a7537d81312fb0dfd712cd"
+      ansible.builtin.copy:
+        src: "QEMU_EFI.fd"
         dest: "{{ molecule_driver_directory }}/QEMU_EFI.fd"
+        checksum: "sha256:d28d0f28b31b9982f0bed6123d9e1b9c4b9f49aa57de159808487318056ba89b"
         mode: "0644"
       when: "'aarch64' in molecule_instances | map(attribute='image_arch') | list | unique"
 
@@ -245,7 +245,7 @@
         -nic vmnet-shared,model=virtio-net-pci,mac={{ item.vm_network_mac }}
         {% endif %}
         {% if item.vm_network == 'user' %}
-        -nic user,hostfwd=tcp::{{ item.ssh_port }}-:22
+        -nic user,model=virtio-net-pci,hostfwd=tcp::{{ item.ssh_port }}-:22
         {% endif %}
         -display none
         -daemonize
@@ -318,8 +318,8 @@
       ansible.builtin.wait_for:
         host: "{{ molecule_instances_ipv4[item.name] }}"
         port: "{{ item.ssh_port }}"
-        delay: 5
-        timeout: 180
+        delay: 30
+        timeout: "{{ 60 * molecule_instances | length }}"
         search_regex: "OpenSSH"
       loop: "{{ molecule_instances }}"
       loop_control:
