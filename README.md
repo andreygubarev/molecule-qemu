@@ -19,7 +19,8 @@ Supported platforms:
 
 Support guest OS:
 * Ubuntu 20.04 LTS (aarch64, x86_64)
-* Debian 11 (x86_64)
+* Ubuntu 22.04 LTS (aarch64, x86_64)
+* Debian 11 (aarch64, x86_64)
 
 Support of other platforms and guest OS is possible, but not tested. Please, open an issue if you want to add support for other platforms.
 
