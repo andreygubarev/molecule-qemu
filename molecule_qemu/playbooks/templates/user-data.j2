@@ -4,3 +4,8 @@ ssh_authorized_keys:
 
 output:
   all: ">> /var/log/cloud-init-output.log"
+
+runcmd:
+  - sed -i 's/.*\(ssh-.*\)/\1/p' /root/.ssh/authorized_keys
+  - sed -i 's/^#PermitRootLogin prohibit-password/PermitRootLogin prohibit-password/' /etc/ssh/sshd_config
+  - systemctl restart ssh
