@@ -1,4 +1,10 @@
 #cloud-config
+package_update: true
+packages:
+  - ca-certificates
+  - curl
+  - locales-all
+
 ssh_authorized_keys:
 - {{ ssh_keypair.public_key }}
 
