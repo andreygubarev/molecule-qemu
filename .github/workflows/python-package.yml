@@ -51,6 +51,9 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
       - name: Run tests
         run: make test
 
