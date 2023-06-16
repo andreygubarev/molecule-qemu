@@ -40,7 +40,7 @@ jobs:
       - name: Lint with pycodestyle
         run: python -m pycodestyle molecule_qemu
 
-  tests:
+  test:
     runs-on: ubuntu-latest
 
     steps:
