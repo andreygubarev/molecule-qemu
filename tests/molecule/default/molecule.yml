@@ -14,6 +14,26 @@ platforms:
     image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
     image_arch: x86_64
     ssh_port: 10001
+  - name: ubuntu-focal-arm64
+    image: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-arm64.img
+    image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
+    image_arch: aarch64
+    ssh_port: 10002
+  - name: ubuntu-focal-amd64
+    image: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
+    image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
+    image_arch: x86_64
+    ssh_port: 10003
+  - name: ubuntu-jammy-arm64
+    image: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-arm64.img
+    image_checksum: sha256:https://cloud-images.ubuntu.com/jammy/current/SHA256SUMS
+    image_arch: aarch64
+    ssh_port: 10004
+  - name: ubuntu-jammy-amd64
+    image: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+    image_checksum: sha256:https://cloud-images.ubuntu.com/jammy/current/SHA256SUMS
+    image_arch: x86_64
+    ssh_port: 10005
 provisioner:
   name: ansible
 verifier:
