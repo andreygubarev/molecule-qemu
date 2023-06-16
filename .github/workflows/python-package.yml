@@ -61,7 +61,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
-        name: ansible-collection
+        name: python-package
         path: 'dist/*'
 
   release:
@@ -81,8 +81,15 @@ jobs:
         run: |
           echo "prerelease=$(if [[ "${{ github.ref }}" == *"rc"* ]]; then echo "true"; else echo "false"; fi)" >> "$GITHUB_OUTPUT"
 
+      - uses: actions/download-artifact@v3
+        with:
+          name: python-package
+
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           prerelease: ${{ steps.prerelease.outputs.prerelease }}
           generate_release_notes: true
+          files: |
+            *.whl
+            *.tar.gz
