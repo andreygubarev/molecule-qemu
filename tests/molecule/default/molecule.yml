@@ -4,13 +4,16 @@ dependency:
 driver:
   name: molecule-qemu
 platforms:
+  - name: debian-bullseye-arm64
+    image: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
+    image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
+    image_arch: aarch64
+    ssh_port: 10000
   - name: debian-bullseye-amd64
     image: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2
     image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
     image_arch: x86_64
-    vm_memory: 512
-    vm_disk: 1G
-    ssh_port: 10000
+    ssh_port: 10001
 provisioner:
   name: ansible
 verifier:
