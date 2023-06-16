@@ -1,6 +1,8 @@
-VIRTUALENV_VENV ?= .venv
+MAKEFILE_DIR := $(realpath $(dir $(firstword $(MAKEFILE_LIST))))
+VIRTUALENV_VENV ?= $(MAKEFILE_DIR)/.venv
 VIRTUALENV_PYTHON := $(VIRTUALENV_VENV)/bin/python3
 VIRTUALENV_PIP := $(VIRTUALENV_PYTHON) -m pip
+VIRTUALENV_MOLECULE := $(VIRTUALENV_VENV)/bin/molecule
 
 .PHONY: help
 help: ## Show this help
@@ -21,8 +23,9 @@ lint: virtualenv ## Lint
 	$(VIRTUALENV_VENV)/bin/pycodestyle molecule_qemu
 
 .PHONY: test
-test:
+test: virtualenv ## Test
 	$(VIRTUALENV_PIP) install -e .
+	cd tests && $(VIRTUALENV_MOLECULE) test
 
 .PHONY: clean
 clean: ## Remove cache
