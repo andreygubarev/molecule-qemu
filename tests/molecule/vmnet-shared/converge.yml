@@ -1,0 +1,12 @@
+---
+- name: Converge
+  hosts: all
+
+  environment:
+    http_proxy: "{{ lookup('ansible.builtin.env', 'http_proxy') | default(omit) }}"
+    https_proxy: "{{ lookup('ansible.builtin.env', 'https_proxy') | default(omit) }}"
+
+  tasks:
+    - name: "Include tests"
+      ansible.builtin.include_role:
+        name: "tests"

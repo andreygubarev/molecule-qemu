@@ -25,7 +25,17 @@ lint: virtualenv ## Lint
 .PHONY: test
 test: virtualenv ## Test
 	$(VIRTUALENV_PIP) install -e .
-	cd tests && $(VIRTUALENV_MOLECULE) test
+	cd tests && $(VIRTUALENV_MOLECULE) test -s default
+
+.PHONY: test-all
+test-all: virtualenv ## Test
+	$(VIRTUALENV_PIP) install -e .
+	cd tests && \
+		$(VIRTUALENV_MOLECULE) destroy || true && \
+		$(VIRTUALENV_MOLECULE) reset && \
+		$(VIRTUALENV_MOLECULE) test -s default && \
+		$(VIRTUALENV_MOLECULE) test -s user && \
+		$(VIRTUALENV_MOLECULE) test -s vmnet-shared
 
 .PHONY: clean
 clean: ## Remove cache
