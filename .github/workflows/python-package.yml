@@ -57,7 +57,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -yq --no-install-recommends mkisofs qemu-utils
+          sudo apt-get install -yq --no-install-recommends mkisofs qemu-system-x86_64 qemu-utils
 
       - name: Run tests
         run: make test
