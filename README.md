@@ -1,6 +1,16 @@
 # `molecule-qemu`
 
-Molecule QEMU driver for testing Ansible roles.
+The development of the Molecule QEMU driver was motivated by the author's choice of the Apple M1 as their primary development machine. They wanted to test Ansible roles on the Apple M1 but preferred not to rely on Docker for testing due to challenges with Docker's systemd support.
+
+Supported platforms:
+* MacOS 13.x (aaarch64)
+
+Support guest OS:
+* Ubuntu 20.04 LTS (aarch64, x86_64)
+* Ubuntu 22.04 LTS (aarch64, x86_64)
+* Debian 11 (aarch64, x86_64)
+
+Support of other platforms and guest OS is possible, but not tested. Please, open an issue if you want to add support for other platforms.
 
 ## Usage
 
@@ -13,16 +23,6 @@ Install QEMU and CDRTools on macOS:
 ```bash
 brew install qemu cdrtools
 ```
-
-Supported platforms:
-* MacOS 13.x (aaarch64)
-
-Support guest OS:
-* Ubuntu 20.04 LTS (aarch64, x86_64)
-* Ubuntu 22.04 LTS (aarch64, x86_64)
-* Debian 11 (aarch64, x86_64)
-
-Support of other platforms and guest OS is possible, but not tested. Please, open an issue if you want to add support for other platforms.
 
 ## Network modes
 
