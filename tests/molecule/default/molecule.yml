@@ -8,6 +8,8 @@ platforms:
     image: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2
     image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
     image_arch: x86_64
+    vm_memory: 512
+    vm_disk: 1G
     ssh_port: 10000
 provisioner:
   name: ansible
