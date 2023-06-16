@@ -42,7 +42,7 @@
           "vm_memory": "{{ item.vm_memory | default(qemu_vm_memory) }}",
           "vm_disk": "{{ item.vm_disk | default(qemu_vm_disk) }}",
           "vm_network": "{{ item.vm_network | default(qemu_vm_network) }}",
-          "vm_network_mac": "{{ '52:54:00' | community.general.random_mac(seed=item.name | to_json | hash('md5')) | regex_replace('(^|:)0([0-9A-Fa-f])', '\\1\\2') }}",
+          "vm_network_mac": "{{ '52:54:00' | community.general.random_mac(seed=(molecule_project_name + molecule_scenario_name + item.name) | to_json | hash('md5')) | regex_replace('(^|:)0([0-9A-Fa-f])', '\\1\\2') }}",
 
           "path_disk": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.qcow2",
           "path_pid": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.pid",
