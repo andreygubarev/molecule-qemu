@@ -1,6 +1,6 @@
 # `molecule-qemu`
 
-The development of the Molecule QEMU driver was motivated by the author's choice of the Apple M1 as their primary development machine. They wanted to test Ansible roles on the Apple M1 but preferred not to rely on Docker for testing due to challenges with Docker's systemd support.
+The development of the Molecule QEMU driver was motivated by the author's choice of the Apple M1 as their primary development machine. He wanted to test Ansible roles on the Apple M1 but preferred not to rely on `Docker` for testing due to challenges with Docker's `systemd` support. Author never liked to install supplementary software such as `Vagrant` and `VirtualBox` on their development machine. Author is aware of `libvirt` and `virt-manager` but their complexity and the lack of support was frustrating.
 
 Supported platforms:
 * MacOS 13.x (aaarch64)
