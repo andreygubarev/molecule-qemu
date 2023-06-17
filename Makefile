@@ -22,20 +22,24 @@ lint: virtualenv ## Lint
 	$(VIRTUALENV_VENV)/bin/ansible-lint -v molecule_qemu
 	$(VIRTUALENV_VENV)/bin/pycodestyle molecule_qemu
 
-.PHONY: test
-test: virtualenv ## Test
+.PHONY: test  ## Test
+test:
 	$(VIRTUALENV_PIP) install -e .
-	cd tests && $(VIRTUALENV_MOLECULE) test -s default
+	cd tests && $(VIRTUALENV_MOLECULE) test
 
-.PHONY: test-all
-test-all: virtualenv ## Test
+.PHONY: test-%
+test-%: virtualenv
 	$(VIRTUALENV_PIP) install -e .
-	cd tests && \
-		$(VIRTUALENV_MOLECULE) destroy || true && \
-		$(VIRTUALENV_MOLECULE) reset && \
-		$(VIRTUALENV_MOLECULE) test -s default && \
-		$(VIRTUALENV_MOLECULE) test -s user && \
-		$(VIRTUALENV_MOLECULE) test -s vmnet-shared
+	cd tests && $(VIRTUALENV_MOLECULE) test -s $*
+
+.PHONY: test-network
+test-network: test-network-shared test-network-user  ## Test network
+
+.PHONY: test-os
+test-os: test-os-debian-bullseye test-os-ubuntu-focal test-os-ubuntu-jammy  ## Test OS
+
+.PHONY: test-platform
+test-platform: test-platform-amd64 test-platform-arm64  ## Test platform
 
 .PHONY: clean
 clean: ## Remove cache

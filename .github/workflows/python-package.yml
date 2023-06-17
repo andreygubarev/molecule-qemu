@@ -40,9 +40,28 @@ jobs:
       - name: Lint with pycodestyle
         run: python -m pycodestyle molecule_qemu
 
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -yq --no-install-recommends mkisofs qemu-system-x86 qemu-utils
+
+      - name: Run test
+        run: make test-platform-amd64
+
   build:
     runs-on: ubuntu-latest
-    needs: [lint-ansible, lint-python]
+    needs: [lint-ansible, lint-python, test]
 
     steps:
       - uses: actions/checkout@v3

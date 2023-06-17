@@ -1,0 +1,20 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: molecule-qemu
+platforms:
+  - name: ubuntu-focal-amd64
+    image: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
+    image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
+    image_arch: x86_64
+    ssh_port: 10000
+  - name: ubuntu-focal-arm64
+    image: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-arm64.img
+    image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
+    image_arch: aarch64
+    ssh_port: 10001
+provisioner:
+  name: ansible
+verifier:
+  name: ansible
