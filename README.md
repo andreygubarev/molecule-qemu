@@ -177,7 +177,6 @@ For convenience, here are the URLs for the cloud images used in the examples abo
   * https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
 
 
-
 # Reference
 
 * [Ansible](https://www.ansible.com/)
