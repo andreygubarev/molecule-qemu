@@ -51,6 +51,8 @@ Mode is selected by setting `vm_network: vmnet-shared` in `molecule.yml`.
 
 # Examples
 
+See [tests](https://github.com/andreygubarev/molecule-qemu/tree/main/tests/molecule) for more examples.
+
 ## Example scenario
 ```bash
 molecule init scenario default --driver-name molecule-qemu --verifier-name testinfra
