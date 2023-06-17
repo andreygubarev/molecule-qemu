@@ -40,10 +40,10 @@ driver:
   name: molecule-qemu
 platforms:
   - name: debian-bullseye-arm64
-    image: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
-    image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
     image_arch: aarch64
-    vm_network: vmnet-shared
+    image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
+    image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
+    network_mode: vmnet-shared
 provisioner:
   name: ansible
   inventory:
@@ -53,7 +53,30 @@ verifier:
   name: testinfra
 ```
 
+Full list of supported options:
+```yaml
+platforms:
+  - name: debian-bullseye-arm64
+
+    image_arch: aarch64 # optional, default is x86_64
+    image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
+    image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
+    image_format: qcow2 # optional, default is qcow2
+
+    network_mode: vmnet-shared # optional, default is user
+    network_ssh_port: 2222 # optional, default is 22
+    network_ssh_user: root # optional, default is root
+
+    vm_cpus: 1 # optional, default is 1
+    vm_memory: 512 # optional, default is 512
+    vm_disk: 8G # optional, default is 8G
+```
+
 ### Dependencies
+
+Driver depends on:
+* QEMU (tested with 8.0.2)
+* mkisofs (tested with 3.02a09)
 
 Install QEMU and CDRTools on macOS:
 
@@ -73,29 +96,29 @@ apt-get install mkisofs qemu-system-x86 qemu-utils
 
 This is the default network mode. It uses QEMU's user networking mode.
 
-Mode is selected by setting `vm_network: user` in `molecule.yml`. This is the default mode. SSH port is forwarded to the host and must be unique for each platform (use `ssh_port` option to set it). Example:
+Mode is selected by setting `network_mode: user` in `molecule.yml`. This is the default mode. SSH port is forwarded to the host and must be unique for each platform (use `network_ssh_port` option to set it). Example:
 
 ```yaml
 - name: debian-bullseye-arm64
-  image: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
-  image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
   image_arch: aarch64
-  vm_network: user # this is the default
-  ssh_port: 2022
+  image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
+  image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
+  network_mode: user
+  network_ssh_port: 2222
 ```
 
 ### `vmnet-shared` network mode
 
 This mode uses QEMU's `vmnet-shared` networking mode. It requires `vmnet.framework` to be installed on the host. This mode is only supported on MacOS. It requires *passwordless* `sudo` access for current user.
 
-Mode is selected by setting `vm_network: vmnet-shared` in `molecule.yml`. Example:
+Mode is selected by setting `network_mode: vmnet-shared` in `molecule.yml`. Example:
 
 ```yaml
 - name: debian-bullseye-arm64
-  image: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
-  image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
   image_arch: aarch64
-  vm_network: vmnet-shared
+  image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
+  image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
+  network_mode: vmnet-shared
 ```
 
 # Examples
@@ -106,37 +129,45 @@ See [tests](https://github.com/andreygubarev/molecule-qemu/tree/main/tests/molec
 
 ```yaml
 platforms:
-  - name: debian-bullseye-arm64
-    image: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
-    image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
-    image_arch: aarch64
-    ssh_port: 10000
+
   - name: debian-bullseye-amd64
-    image: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2
+    image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2
     image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
-    image_arch: x86_64
-    ssh_port: 10001
-  - name: ubuntu-focal-arm64
-    image: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-arm64.img
-    image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
+    network_ssh_port: 2222
+
+  - name: debian-bullseye-arm64
     image_arch: aarch64
-    ssh_port: 10002
+    image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
+    image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
+    network_ssh_port: 2223
+
   - name: ubuntu-focal-amd64
-    image: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
+    image_url: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
     image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
-    image_arch: x86_64
-    ssh_port: 10003
-  - name: ubuntu-jammy-arm64
-    image: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-arm64.img
-    image_checksum: sha256:https://cloud-images.ubuntu.com/jammy/current/SHA256SUMS
+    network_ssh_port: 2224
+
+  - name: ubuntu-focal-arm64
     image_arch: aarch64
-    ssh_port: 10004
+    image_url: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-arm64.img
+    image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
+    network_ssh_port: 2225
+
   - name: ubuntu-jammy-amd64
-    image: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+    image_url: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
     image_checksum: sha256:https://cloud-images.ubuntu.com/jammy/current/SHA256SUMS
-    image_arch: x86_64
-    ssh_port: 10005
+    network_ssh_port: 2226
+
+- name: ubuntu-jammy-arm64
+    image_arch: aarch64
+    image_url: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-arm64.img
+    image_checksum: sha256:https://cloud-images.ubuntu.com/jammy/current/SHA256SUMS
+    network_ssh_port: 2227
 ```
+
+# Troubleshooting
+
+Molecule working directory is: `~/.cache/molecule/<role-name>/<scenario-name>`.
+QEMU images caches is: `~/.cache/molecule/.qemu`.
 
 # Cloud Images URLs
 
@@ -154,7 +185,6 @@ For convenience, here are the URLs for the cloud images used in the examples abo
 * https://cloud-images.ubuntu.com/jammy/current/SHA256SUMS
   * https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-arm64.img
   * https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
-
 
 
 # Reference
