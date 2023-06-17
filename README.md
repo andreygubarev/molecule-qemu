@@ -3,13 +3,13 @@
 The development of the Molecule `QEMU` driver was motivated by the author's choice of the Apple M1 as their primary development machine. He wanted to test Ansible roles on the Apple M1 but preferred not to rely on `Docker` for testing due to challenges with Docker's `systemd` support. Author never liked to install supplementary software such as `Vagrant` and `VirtualBox` on development machine. Author is aware of `libvirt` and `virt-manager` but their complexity and the lack of support was frustrating.
 
 Supported platforms:
-* MacOS 13.x (aaarch64)
-* Ubuntu 22.04 LTS (x86_64)
+* MacOS 13.x (arm64)
+* Ubuntu 22.04 LTS (amd64)
 
 Support guest OS:
-* Ubuntu 20.04 LTS (aarch64, x86_64)
-* Ubuntu 22.04 LTS (aarch64, x86_64)
-* Debian 11 (aarch64, x86_64)
+* Debian 11 (arm64, amd64)
+* Ubuntu 20.04 LTS (arm64, amd64)
+* Ubuntu 22.04 LTS (arm64, amd64)
 
 Support of other platforms and guest OS is possible, but not tested. Please, open an issue if you want to add support for other platforms.
 
