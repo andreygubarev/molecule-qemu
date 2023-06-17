@@ -10,15 +10,14 @@
     molecule_scenario_name: "{{ lookup('env', 'MOLECULE_SCENARIO_NAME') }}"
     molecule_project_name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
     qemu_cap_hvf: false
-
     qemu_image_arch: "x86_64"
     qemu_image_format: "qcow2"
-
     qemu_vm_memory: "512"
     qemu_vm_cpus: "1"
     qemu_vm_disk: "8G"
-
     qemu_network_mode: "user"
+    qemu_timeout_arp: 120
+    qemu_timeout_ssh: 600
 
   environment:
     http_proxy: "{{ lookup('ansible.builtin.env', 'http_proxy') | default(omit) }}"
@@ -300,7 +299,7 @@
             set -o pipefail
             arp -an | grep -i '{{ item.network_mac }}' | awk '{print $2}' | sed 's/[()]//g'
           until: molecule_instances_arp.stdout | length > 0
-          retries: 120
+          retries: "{{ qemu_timeout_arp }}"
           delay: 1
           loop: "{{ molecule_instances }}"
           loop_control:
@@ -323,7 +322,7 @@
         host: "{{ molecule_instances_ipv4[item.name] }}"
         port: "{{ item.network_ssh_port }}"
         delay: 30
-        timeout: 600
+        timeout: "{{ qemu_timeout_ssh }}"
         search_regex: "OpenSSH"
       loop: "{{ molecule_instances }}"
       loop_control:
