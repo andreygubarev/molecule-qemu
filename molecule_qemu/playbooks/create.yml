@@ -300,7 +300,7 @@
             set -o pipefail
             arp -an | grep -i '{{ item.network_mac }}' | awk '{print $2}' | sed 's/[()]//g'
           until: molecule_instances_arp.stdout | length > 0
-          retries: 30
+          retries: 60
           delay: 1
           loop: "{{ molecule_instances }}"
           loop_control:
