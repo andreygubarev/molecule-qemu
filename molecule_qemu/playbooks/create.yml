@@ -10,12 +10,15 @@
     molecule_scenario_name: "{{ lookup('env', 'MOLECULE_SCENARIO_NAME') }}"
     molecule_project_name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
     qemu_cap_hvf: false
-    qemu_vm_image_arch: "x86_64"
-    qemu_vm_image_format: "qcow2"
-    qemu_vm_memory: "1024"
-    qemu_vm_cpus: "2"
-    qemu_vm_disk: "4G"
-    qemu_vm_network: "user"
+
+    qemu_image_arch: "x86_64"
+    qemu_image_format: "qcow2"
+
+    qemu_vm_memory: "512"
+    qemu_vm_cpus: "1"
+    qemu_vm_disk: "8G"
+
+    qemu_network_mode: "user"
 
   environment:
     http_proxy: "{{ lookup('ansible.builtin.env', 'http_proxy') | default(omit) }}"
@@ -30,19 +33,20 @@
           "instance": "molecule-{{ molecule_project_name }}-{{ molecule_scenario_name }}-{{ item.name }}",
           "name": "{{ item.name }}",
 
-          "image_arch": "{{ item.image_arch | default(qemu_vm_image_arch) }}",
+          "image_arch": "{{ item.image_arch | default(qemu_image_arch) }}",
           "image_url": "{{ item.image_url }}",
           "image_checksum": "{{ item.image_checksum | default(omit) }}",
-          "image_format": "{{ item.image_format | default(qemu_vm_image_format) }}",
+          "image_format": "{{ item.image_format | default(qemu_image_format) }}",
 
-          "ssh_port": "{{ item.ssh_port | default(22) }}",
-          "ssh_user": "{{ item.ssh_user | default('root') }}",
+          "network_mode": "{{ item.network_mode | default(qemu_network_mode) }}",
+          "network_mac": "{{ '52:54:00' | community.general.random_mac(seed=(molecule_project_name + molecule_scenario_name + item.name) | to_json | hash('md5')) | regex_replace('(^|:)0([0-9A-Fa-f])', '\\1\\2') }}",
+
+          "network_ssh_port": "{{ item.network_ssh_port | default(2222) }}",
+          "network_ssh_user": "{{ item.network_ssh_user | default('root') }}",
 
           "vm_cpus": "{{ item.vm_cpus | default(qemu_vm_cpus) }}",
           "vm_memory": "{{ item.vm_memory | default(qemu_vm_memory) }}",
           "vm_disk": "{{ item.vm_disk | default(qemu_vm_disk) }}",
-          "vm_network": "{{ item.vm_network | default(qemu_vm_network) }}",
-          "vm_network_mac": "{{ '52:54:00' | community.general.random_mac(seed=(molecule_project_name + molecule_scenario_name + item.name) | to_json | hash('md5')) | regex_replace('(^|:)0([0-9A-Fa-f])', '\\1\\2') }}",
 
           "path_disk": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.qcow2",
           "path_pid": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.pid",
@@ -71,7 +75,7 @@
       ansible.builtin.assert:
         that:
           - item.image_arch in ['x86_64', 'aarch64']
-          - item.vm_network in ['user', 'vmnet-shared']
+          - item.network_mode in ['user', 'vmnet-shared']
         fail_msg: "Molecule instance {{ item.name }} configuration is not supported"
         success_msg: "Molecule instance {{ item.name }} configuration is supported"
       loop: "{{ molecule_instances }}"
@@ -81,21 +85,21 @@
     - name: Assert VMs network configuration
       ansible.builtin.assert:
         that:
-          - molecule_instances | map(attribute='vm_network') | list | unique | length == 1
+          - molecule_instances | map(attribute='network_mode') | list | unique | length == 1
         fail_msg: "Network modes are mutually exclusive"
         success_msg: "Network modes are configured properly"
 
     - name: Set QEMU network
       ansible.builtin.set_fact:
-        qemu_vm_network: "{{ molecule_instances | map(attribute='vm_network') | list | unique | first }}"
+        qemu_network_mode: "{{ molecule_instances | map(attribute='network_mode') | list | unique | first }}"
 
     - name: Assert VMs ssh configuration
       ansible.builtin.assert:
         that:
-          - molecule_instances | map(attribute='ssh_port') | list | unique | length == molecule_instances | length
+          - molecule_instances | map(attribute='network_ssh_port') | list | unique | length == molecule_instances | length
         fail_msg: "Molecule instances SSH are not properly configured for 'user' network"
         success_msg: "Molecule instances SSH are properly configured for 'user' network"
-      when: qemu_vm_network == 'user'
+      when: qemu_network_mode == 'user'
 
     ### capabilities ##########################################################
 
@@ -229,7 +233,7 @@
 
     - name: Launch VMs as priviliged user
       ansible.builtin.set_fact:
-        qemu_privileged: "{{ (qemu_vm_network == 'vmnet-shared') | bool }}"
+        qemu_privileged: "{{ (qemu_network_mode == 'vmnet-shared') | bool }}"
 
     - name: Launch VMs
       become: "{{ qemu_privileged }}"
@@ -241,11 +245,11 @@
         -hda {{ item.path_disk }}
         -m {{ item.vm_memory }}
         -smp {{ item.vm_cpus }}
-        {% if item.vm_network == 'vmnet-shared' %}
-        -nic vmnet-shared,model=virtio-net-pci,mac={{ item.vm_network_mac }}
+        {% if item.network_mode == 'vmnet-shared' %}
+        -nic vmnet-shared,model=virtio-net-pci,mac={{ item.network_mac }}
         {% endif %}
-        {% if item.vm_network == 'user' %}
-        -nic user,model=virtio-net-pci,hostfwd=tcp::{{ item.ssh_port }}-:22
+        {% if item.network_mode == 'user' %}
+        -nic user,model=virtio-net-pci,hostfwd=tcp::{{ item.network_ssh_port }}-:22
         {% endif %}
         -display none
         -daemonize
@@ -289,12 +293,12 @@
     ### qemu network: vmnet-shared ############################################
 
     - name: Configure QEMU network (vmnet-shared)
-      when: qemu_vm_network == 'vmnet-shared'
+      when: qemu_network_mode == 'vmnet-shared'
       block:
         - name: Get IPv4 addresses from ARP table (vmnet-shared)
           ansible.builtin.shell: |
             set -o pipefail
-            arp -an | grep -i '{{ item.vm_network_mac }}' | awk '{print $2}' | sed 's/[()]//g'
+            arp -an | grep -i '{{ item.network_mac }}' | awk '{print $2}' | sed 's/[()]//g'
           until: molecule_instances_arp.stdout | length > 0
           retries: 30
           delay: 1
@@ -317,7 +321,7 @@
     - name: Wait for SSH
       ansible.builtin.wait_for:
         host: "{{ molecule_instances_ipv4[item.name] }}"
-        port: "{{ item.ssh_port }}"
+        port: "{{ item.network_ssh_port }}"
         delay: 30
         timeout: "{{ 600 * molecule_instances | length }}"
         search_regex: "OpenSSH"
@@ -333,8 +337,8 @@
           "instance": "{{ item.instance }}",
           "name": "{{ item.name }}",
           "address": "{{ molecule_instances_ipv4[item.name] }}",
-          "user": "{{ item.ssh_user }}",
-          "port": "{{ item.ssh_port }}",
+          "user": "{{ item.network_ssh_user }}",
+          "port": "{{ item.network_ssh_port }}",
           "identity_file": "{{ ssh_keypair.filename }}",
           "pidfile": "{{ item.path_pid }}",
           "diskfile": "{{ item.path_disk }}",
