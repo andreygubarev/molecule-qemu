@@ -323,7 +323,7 @@
         host: "{{ molecule_instances_ipv4[item.name] }}"
         port: "{{ item.network_ssh_port }}"
         delay: 30
-        timeout: "{{ 600 * molecule_instances | length }}"
+        timeout: 600
         search_regex: "OpenSSH"
       loop: "{{ molecule_instances }}"
       loop_control:
