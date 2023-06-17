@@ -64,7 +64,7 @@ platforms:
     image_format: qcow2 # optional, default is qcow2
 
     network_mode: vmnet-shared # optional, default is user
-    network_ssh_port: 10000 # optional, default is 2222
+    network_ssh_port: 2222 # optional, default is 22
     network_ssh_user: root # optional, default is root
 
     vm_cpus: 1 # optional, default is 1
@@ -129,6 +129,7 @@ platforms:
   - name: debian-bullseye-amd64
     image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2
     image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
+    network_ssh_port: 2222
 
   - name: debian-bullseye-arm64
     image_arch: aarch64
