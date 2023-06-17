@@ -40,7 +40,7 @@ driver:
   name: molecule-qemu
 platforms:
   - name: debian-bullseye-arm64
-    image: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
+    image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
     image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
     image_arch: aarch64
     vm_network: vmnet-shared
@@ -51,6 +51,25 @@ provisioner:
       debian-bullseye-arm64: {}
 verifier:
   name: testinfra
+```
+
+Full list of supported options:
+```yaml
+platforms:
+  - name: debian-bullseye-arm64
+
+    image_arch: aarch64 # optional, default is x86_64
+    image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
+    image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
+    image_format: qcow2 # optional, default is qcow2
+
+    network_mode: vmnet-shared # optional, default is user
+    network_ssh_port: 10000 # optional, default is 2222
+    network_ssh_user: root # optional, default is root
+
+    vm_cpus: 1 # optional, default is 1
+    vm_memory: 512 # optional, default is 512
+    vm_disk: 8G # optional, default is 8G
 ```
 
 ### Dependencies
@@ -77,11 +96,11 @@ Mode is selected by setting `vm_network: user` in `molecule.yml`. This is the de
 
 ```yaml
 - name: debian-bullseye-arm64
-  image: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
-  image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
   image_arch: aarch64
-  vm_network: user # this is the default
-  ssh_port: 2022
+  image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
+  image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
+  network_mode: user
+  network_ssh_port: 2222
 ```
 
 ### `vmnet-shared` network mode
@@ -92,9 +111,9 @@ Mode is selected by setting `vm_network: vmnet-shared` in `molecule.yml`. Exampl
 
 ```yaml
 - name: debian-bullseye-arm64
-  image: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
-  image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
   image_arch: aarch64
+  image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
+  image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
   vm_network: vmnet-shared
 ```
 
@@ -106,36 +125,38 @@ See [tests](https://github.com/andreygubarev/molecule-qemu/tree/main/tests/molec
 
 ```yaml
 platforms:
-  - name: debian-bullseye-arm64
-    image: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
-    image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
-    image_arch: aarch64
-    ssh_port: 10000
+
   - name: debian-bullseye-amd64
-    image: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2
+    image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2
     image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
-    image_arch: x86_64
-    ssh_port: 10001
-  - name: ubuntu-focal-arm64
-    image: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-arm64.img
-    image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
+
+  - name: debian-bullseye-arm64
     image_arch: aarch64
-    ssh_port: 10002
+    image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
+    image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
+    network_ssh_port: 2223
+
   - name: ubuntu-focal-amd64
-    image: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
+    image_url: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
     image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
-    image_arch: x86_64
-    ssh_port: 10003
-  - name: ubuntu-jammy-arm64
-    image: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-arm64.img
-    image_checksum: sha256:https://cloud-images.ubuntu.com/jammy/current/SHA256SUMS
+    network_ssh_port: 2224
+
+  - name: ubuntu-focal-arm64
     image_arch: aarch64
-    ssh_port: 10004
+    image_url: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-arm64.img
+    image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
+    network_ssh_port: 2225
+
   - name: ubuntu-jammy-amd64
-    image: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+    image_url: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
     image_checksum: sha256:https://cloud-images.ubuntu.com/jammy/current/SHA256SUMS
-    image_arch: x86_64
-    ssh_port: 10005
+    network_ssh_port: 2226
+
+- name: ubuntu-jammy-arm64
+    image_arch: aarch64
+    image_url: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-arm64.img
+    image_checksum: sha256:https://cloud-images.ubuntu.com/jammy/current/SHA256SUMS
+    network_ssh_port: 2227
 ```
 
 # Cloud Images URLs
