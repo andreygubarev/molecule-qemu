@@ -73,13 +73,14 @@ apt-get install mkisofs qemu-system-x86 qemu-utils
 
 This is the default network mode. It uses QEMU's user networking mode.
 
-Mode is selected by setting `vm_network: user` in `molecule.yml`. Example:
+Mode is selected by setting `vm_network: user` in `molecule.yml`. This is the default mode. SSH port is forwarded to the host and must be unique for each platform (use `ssh_port` option to set it). Example:
 
 ```yaml
 - name: debian-bullseye-arm64
   image: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
   image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
   image_arch: aarch64
+  vm_network: user # this is the default
   ssh_port: 2022
 ```
 
