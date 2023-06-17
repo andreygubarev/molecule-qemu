@@ -40,10 +40,10 @@ driver:
   name: molecule-qemu
 platforms:
   - name: debian-bullseye-arm64
+    image_arch: aarch64
     image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
     image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
-    image_arch: aarch64
-    vm_network: vmnet-shared
+    network_mode: vmnet-shared
 provisioner:
   name: ansible
   inventory:
