@@ -74,6 +74,10 @@ platforms:
 
 ### Dependencies
 
+Driver depends on:
+* QEMU (tested with 8.0.2)
+* mkisofs (tested with 3.02a09)
+
 Install QEMU and CDRTools on macOS:
 
 ```bash
