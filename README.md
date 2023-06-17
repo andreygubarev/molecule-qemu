@@ -1,9 +1,10 @@
 # `molecule-qemu`
 
-The development of the Molecule QEMU driver was motivated by the author's choice of the Apple M1 as their primary development machine. He wanted to test Ansible roles on the Apple M1 but preferred not to rely on `Docker` for testing due to challenges with Docker's `systemd` support. Author never liked to install supplementary software such as `Vagrant` and `VirtualBox` on development machine. Author is aware of `libvirt` and `virt-manager` but their complexity and the lack of support was frustrating.
+The development of the Molecule `QEMU` driver was motivated by the author's choice of the Apple M1 as their primary development machine. He wanted to test Ansible roles on the Apple M1 but preferred not to rely on `Docker` for testing due to challenges with Docker's `systemd` support. Author never liked to install supplementary software such as `Vagrant` and `VirtualBox` on development machine. Author is aware of `libvirt` and `virt-manager` but their complexity and the lack of support was frustrating.
 
 Supported platforms:
 * MacOS 13.x (aaarch64)
+* Ubuntu 22.04 LTS (x86_64)
 
 Support guest OS:
 * Ubuntu 20.04 LTS (aarch64, x86_64)
@@ -22,6 +23,12 @@ Install QEMU and CDRTools on macOS:
 
 ```bash
 brew install qemu cdrtools
+```
+
+Install QEMU on Ubuntu:
+
+```bash
+apt-get install mkisofs qemu-system-x86 qemu-utils
 ```
 
 ## Network modes
