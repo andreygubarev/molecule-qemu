@@ -159,6 +159,11 @@ platforms:
     network_ssh_port: 2227
 ```
 
+# Troubleshooting
+
+Molecule working directory is: `~/.cache/molecule/<role-name>/<scenario-name>`.
+QEMU images caches is: `~/.cache/molecule/.qemu`.
+
 # Cloud Images URLs
 
 For convenience, here are the URLs for the cloud images used in the examples above.
