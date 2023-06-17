@@ -8,7 +8,7 @@ platforms:
     image: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2
     image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
     image_arch: x86_64
-    ssh_port: 2022
+    ssh_port: 443
 provisioner:
   name: ansible
 verifier:
