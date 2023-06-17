@@ -92,7 +92,7 @@ apt-get install mkisofs qemu-system-x86 qemu-utils
 
 This is the default network mode. It uses QEMU's user networking mode.
 
-Mode is selected by setting `vm_network: user` in `molecule.yml`. This is the default mode. SSH port is forwarded to the host and must be unique for each platform (use `ssh_port` option to set it). Example:
+Mode is selected by setting `network_mode: user` in `molecule.yml`. This is the default mode. SSH port is forwarded to the host and must be unique for each platform (use `network_ssh_port` option to set it). Example:
 
 ```yaml
 - name: debian-bullseye-arm64
@@ -107,14 +107,14 @@ Mode is selected by setting `vm_network: user` in `molecule.yml`. This is the de
 
 This mode uses QEMU's `vmnet-shared` networking mode. It requires `vmnet.framework` to be installed on the host. This mode is only supported on MacOS. It requires *passwordless* `sudo` access for current user.
 
-Mode is selected by setting `vm_network: vmnet-shared` in `molecule.yml`. Example:
+Mode is selected by setting `network_mode: vmnet-shared` in `molecule.yml`. Example:
 
 ```yaml
 - name: debian-bullseye-arm64
   image_arch: aarch64
   image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
   image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
-  vm_network: vmnet-shared
+  network_mode: vmnet-shared
 ```
 
 # Examples
