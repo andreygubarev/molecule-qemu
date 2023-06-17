@@ -22,8 +22,13 @@ lint: virtualenv ## Lint
 	$(VIRTUALENV_VENV)/bin/ansible-lint -v molecule_qemu
 	$(VIRTUALENV_VENV)/bin/pycodestyle molecule_qemu
 
+.PHONY: test  ## Test
+test:
+	$(VIRTUALENV_PIP) install -e .
+	cd tests && $(VIRTUALENV_MOLECULE) test
+
 .PHONY: test-%
-test-%: virtualenv ## Test molecule scenario
+test-%: virtualenv
 	$(VIRTUALENV_PIP) install -e .
 	cd tests && $(VIRTUALENV_MOLECULE) test -s $*
 
