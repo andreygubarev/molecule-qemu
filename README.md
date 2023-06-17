@@ -17,11 +17,20 @@ Supported network modes:
 * `user` - QEMU's user networking mode
 * `vmnet-shared` - QEMU's `vmnet-shared` networking mode (MacOS only)
 
-## Usage
+## Quick start
 
+Install `molecule-qemu` python package:
 ```bash
 pip install molecule-qemu
 ```
+
+Create a new Molecule scenario using `molecule init` command:
+
+```bash
+molecule init scenario default --driver-name molecule-qemu --verifier-name testinfra
+```
+
+### Dependencies
 
 Install QEMU and CDRTools on macOS:
 
@@ -52,11 +61,6 @@ Mode is selected by setting `vm_network: vmnet-shared` in `molecule.yml`.
 # Examples
 
 See [tests](https://github.com/andreygubarev/molecule-qemu/tree/main/tests/molecule) for more examples.
-
-## Example scenario
-```bash
-molecule init scenario default --driver-name molecule-qemu --verifier-name testinfra
-```
 
 ## Example `molecule.yml` for `user` network mode
 
