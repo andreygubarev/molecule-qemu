@@ -22,24 +22,10 @@ lint: virtualenv ## Lint
 	$(VIRTUALENV_VENV)/bin/ansible-lint -v molecule_qemu
 	$(VIRTUALENV_VENV)/bin/pycodestyle molecule_qemu
 
-.PHONY: test-amd64
-test-amd64: virtualenv ## Test
+.PHONY: test-%
+test-%: virtualenv ## Test molecule scenario
 	$(VIRTUALENV_PIP) install -e .
-	cd tests && $(VIRTUALENV_MOLECULE) test -s default-amd64
-
-.PHONY: test-arm64
-test-arm64: virtualenv ## Test
-	$(VIRTUALENV_PIP) install -e .
-	cd tests && $(VIRTUALENV_MOLECULE) test -s default-arm64
-
-.PHONY: test-network
-test-network: virtualenv ## Test
-	$(VIRTUALENV_PIP) install -e .
-	cd tests && \
-		$(VIRTUALENV_MOLECULE) destroy || true && \
-		$(VIRTUALENV_MOLECULE) reset && \
-		$(VIRTUALENV_MOLECULE) test -s user && \
-		$(VIRTUALENV_MOLECULE) test -s vmnet-shared
+	cd tests && $(VIRTUALENV_MOLECULE) test -s $*
 
 .PHONY: clean
 clean: ## Remove cache
