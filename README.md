@@ -4,7 +4,7 @@ The development of the Molecule `QEMU` driver was motivated by the author's choi
 
 Supported platforms:
 * MacOS 13.x (arm64)
-* Ubuntu 22.04 LTS (amd64)
+* Ubuntu 22.04 LTS (amd64) (tested on GitHub Actions)
 
 Support guest OS:
 * Debian 11 (arm64, amd64)
@@ -12,6 +12,10 @@ Support guest OS:
 * Ubuntu 22.04 LTS (arm64, amd64)
 
 Support of other platforms and guest OS is possible, but not tested. Please, open an issue if you want to add support for other platforms.
+
+Supported network modes:
+* `user` - QEMU's user networking mode
+* `vmnet-shared` - QEMU's `vmnet-shared` networking mode (MacOS only)
 
 ## Usage
 
@@ -32,8 +36,6 @@ apt-get install mkisofs qemu-system-x86 qemu-utils
 ```
 
 ## Network modes
-
-Network mode is selected by setting `vm_network` in `molecule.yml`. Supported modes are: `user` and `vmnet-shared`. Default mode is `user`. All modes are mutually exclusive.
 
 ### `user` network mode
 
