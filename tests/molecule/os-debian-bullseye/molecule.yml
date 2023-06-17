@@ -7,6 +7,7 @@ platforms:
   - name: debian-bullseye-amd64
     image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2
     image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
+    network_ssh_port: 2222
   - name: debian-bullseye-arm64
     image_arch: aarch64
     image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2

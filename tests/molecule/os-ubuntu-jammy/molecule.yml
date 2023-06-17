@@ -7,6 +7,7 @@ platforms:
   - name: ubuntu-jammy-amd64
     image_url: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
     image_checksum: sha256:https://cloud-images.ubuntu.com/jammy/current/SHA256SUMS
+    network_ssh_port: 2222
   - name: ubuntu-jammy-arm64
     image_arch: aarch64
     image_url: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-arm64.img
