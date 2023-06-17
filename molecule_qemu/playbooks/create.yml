@@ -30,9 +30,9 @@
           "instance": "molecule-{{ molecule_project_name }}-{{ molecule_scenario_name }}-{{ item.name }}",
           "name": "{{ item.name }}",
 
-          "image": "{{ item.image }}",
-          "image_checksum": "{{ item.image_checksum | default(omit) }}",
           "image_arch": "{{ item.image_arch | default(qemu_vm_image_arch) }}",
+          "image_url": "{{ item.image_url }}",
+          "image_checksum": "{{ item.image_checksum | default(omit) }}",
           "image_format": "{{ item.image_format | default(qemu_vm_image_format) }}",
 
           "ssh_port": "{{ item.ssh_port | default(22) }}",
@@ -152,7 +152,7 @@
         checksum: "{{ item[1] }}"
         dest: "{{ molecule_driver_directory }}/images/{{ item[0] | basename }}"
         mode: "0644"
-      loop: "{{ molecule_instances | map(attribute='image') | zip(molecule_instances | map(attribute='image_checksum')) | list | unique }}"
+      loop: "{{ molecule_instances | map(attribute='image_url') | zip(molecule_instances | map(attribute='image_checksum')) | list | unique }}"
       loop_control:
         label: "{{ item[0] | basename }}"
       register: images
@@ -218,7 +218,7 @@
       ansible.builtin.command: >
         qemu-img create
         -f qcow2
-        -o backing_file={{ images_cache[item.image] }},backing_fmt={{ item.image_format }}
+        -o backing_file={{ images_cache[item.image_url] }},backing_fmt={{ item.image_format }}
         {{ item.path_disk }}
         {{ item.vm_disk }}
       args:
