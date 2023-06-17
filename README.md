@@ -30,6 +30,17 @@ Create a new Molecule scenario using `molecule init` command:
 molecule init scenario default --driver-name molecule-qemu --verifier-name testinfra
 ```
 
+Edit `molecule.yml` and add platforms:
+
+```yaml
+platforms:
+  - name: debian-bullseye-arm64
+    image: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
+    image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
+    image_arch: aarch64
+    ssh_port: 2022
+```
+
 ### Dependencies
 
 Install QEMU and CDRTools on macOS:
