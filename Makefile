@@ -27,6 +27,15 @@ test-%: virtualenv ## Test molecule scenario
 	$(VIRTUALENV_PIP) install -e .
 	cd tests && $(VIRTUALENV_MOLECULE) test -s $*
 
+.PHONY: test-network
+test-network: test-network-shared test-network-user  ## Test network
+
+.PHONY: test-os
+test-os: test-os-debian-bullseye test-os-ubuntu-focal test-os-ubuntu-jammy  ## Test OS
+
+.PHONY: test-platform
+test-platform: test-platform-amd64 test-platform-arm64  ## Test platform
+
 .PHONY: clean
 clean: ## Remove cache
 	rm -rf $(VIRTUALENV_VENV) build dist *.egg-info
