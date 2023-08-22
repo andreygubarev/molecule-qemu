@@ -132,7 +132,7 @@
 
     - name: Set kvm support
       ansible.builtin.set_fact:
-        qemu_cap_kvm: "{{ kvm_support is defined }}"
+        qemu_cap_kvm: "{{ kvm_support.rc == 0 }}"
       when: ansible_system == 'Linux'
 
     ### prerequisites #########################################################
