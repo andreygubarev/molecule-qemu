@@ -1,3 +1,0 @@
-collections:
-  - name: community.crypto
-    version: ">=2.11.1"
