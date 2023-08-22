@@ -35,8 +35,14 @@ test-%: virtualenv
 .PHONY: test-network
 test-network: test-network-shared test-network-user  ## Test network
 
+.PHONY: test-os-debian
+test-os-debian: test-os-debian-bullseye test-os-debian-bookworm  ## Test Debian OS
+
+.PHONY: test-os-ubuntu
+test-os-ubuntu: test-os-ubuntu-focal test-os-ubuntu-jammy  ## Test Ubuntu OS
+
 .PHONY: test-os
-test-os: test-os-debian-bullseye test-os-ubuntu-focal test-os-ubuntu-jammy  ## Test OS
+test-os: test-os-debian test-os-ubuntu  ## Test OS
 
 .PHONY: test-platform
 test-platform: test-platform-amd64 test-platform-arm64  ## Test platform

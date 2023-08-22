@@ -1,0 +1,19 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: molecule-qemu
+platforms:
+  - name: debian-bookworm-amd64
+    image_url: https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2
+    image_checksum: sha512:https://cloud.debian.org/images/cloud/bookworm/latest/SHA512SUMS
+    network_ssh_port: 2222
+  - name: debian-bookworm-arm64
+    image_arch: aarch64
+    image_url: https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-arm64.qcow2
+    image_checksum: sha512:https://cloud.debian.org/images/cloud/bookworm/latest/SHA512SUMS
+    network_ssh_port: 2223
+provisioner:
+  name: ansible
+verifier:
+  name: ansible
