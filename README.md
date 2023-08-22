@@ -8,6 +8,7 @@ Supported platforms:
 
 Support guest OS:
 * Debian 11 (arm64, amd64)
+* Debian 12 (arm64, amd64)
 * Ubuntu 20.04 LTS (arm64, amd64)
 * Ubuntu 22.04 LTS (arm64, amd64)
 
@@ -141,27 +142,38 @@ platforms:
     image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
     network_ssh_port: 2223
 
+  - name: debian-bookworm-amd64
+    image_url: https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2
+    image_checksum: sha512:https://cloud.debian.org/images/cloud/bookworm/latest/SHA512SUMS
+    network_ssh_port: 2224
+
+  - name: debian-bookworm-arm64
+    image_arch: aarch64
+    image_url: https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-arm64.qcow2
+    image_checksum: sha512:https://cloud.debian.org/images/cloud/bookworm/latest/SHA512SUMS
+    network_ssh_port: 2225
+
   - name: ubuntu-focal-amd64
     image_url: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
     image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
-    network_ssh_port: 2224
+    network_ssh_port: 2226
 
   - name: ubuntu-focal-arm64
     image_arch: aarch64
     image_url: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-arm64.img
     image_checksum: sha256:https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
-    network_ssh_port: 2225
+    network_ssh_port: 2227
 
   - name: ubuntu-jammy-amd64
     image_url: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
     image_checksum: sha256:https://cloud-images.ubuntu.com/jammy/current/SHA256SUMS
-    network_ssh_port: 2226
+    network_ssh_port: 2228
 
 - name: ubuntu-jammy-arm64
     image_arch: aarch64
     image_url: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-arm64.img
     image_checksum: sha256:https://cloud-images.ubuntu.com/jammy/current/SHA256SUMS
-    network_ssh_port: 2227
+    network_ssh_port: 2229
 ```
 
 ## Cloud Images URLs
@@ -172,6 +184,9 @@ For convenience, here are the URLs for the cloud images used in the examples abo
 * https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
   * https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2
   * https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
+* https://cloud.debian.org/images/cloud/bookworm/latest/SHA512SUMS
+  * https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2
+  * https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-arm64.raw
 
 ### [Ubuntu](https://cloud-images.ubuntu.com/)
 * https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
