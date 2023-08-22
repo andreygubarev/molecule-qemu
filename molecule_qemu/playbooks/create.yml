@@ -102,12 +102,12 @@
         qemu_network_mode: "{{ molecule_instances | map(attribute='network_mode') | list | unique | first }}"
 
     - name: Assert VMs ssh configuration
+      when: qemu_network_mode == 'user'
       ansible.builtin.assert:
         that:
           - molecule_instances | map(attribute='network_ssh_port') | list | unique | length == molecule_instances | length
         fail_msg: "Molecule instances SSH are not properly configured for 'user' network"
         success_msg: "Molecule instances SSH are properly configured for 'user' network"
-      when: qemu_network_mode == 'user'
 
     ### capabilities ##########################################################
 
@@ -119,9 +119,9 @@
       ignore_errors: true
 
     - name: Set hvf support
+      when: ansible_system == 'Darwin' and hv_support is defined
       ansible.builtin.set_fact:
         qemu_cap_hvf: "{{ hv_support.stdout | trim == 'kern.hv_support: 1' }}"
-      when: hv_support is defined and ansible_system == 'Darwin'
 
     - name: Check kvm support
       when: ansible_system == 'Linux'
@@ -131,9 +131,9 @@
       ignore_errors: true
 
     - name: Set kvm support
+      when: ansible_system == 'Linux' and kvm_support is defined
       ansible.builtin.set_fact:
         qemu_cap_kvm: "{{ kvm_support.rc == 0 }}"
-      when: ansible_system == 'Linux'
 
     ### prerequisites #########################################################
 
@@ -156,12 +156,12 @@
       register: ssh_keypair
 
     - name: Fetch ARM VMs bios
+      when: "'aarch64' in molecule_instances | map(attribute='image_arch') | list | unique"
       ansible.builtin.copy:
         src: "QEMU_EFI.fd"
         dest: "{{ molecule_driver_directory }}/QEMU_EFI.fd"
         checksum: "784ad38513e327287e96d511c9ca0219aa94e672"
         mode: "0644"
-      when: "'aarch64' in molecule_instances | map(attribute='image_arch') | list | unique"
 
     ### images ###############################################################
 
