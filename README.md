@@ -1,5 +1,7 @@
 # `molecule-qemu`
 
+Molecule QEMU driver for testing Ansible roles.
+
 Supported platforms:
 * MacOS 13.x (arm64)
 * Ubuntu 22.04 LTS (amd64) (tested on GitHub Actions)
