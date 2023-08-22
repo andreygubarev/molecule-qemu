@@ -137,7 +137,7 @@
       ansible.builtin.copy:
         src: "QEMU_EFI.fd"
         dest: "{{ molecule_driver_directory }}/QEMU_EFI.fd"
-        checksum: "sha256:d28d0f28b31b9982f0bed6123d9e1b9c4b9f49aa57de159808487318056ba89b"
+        checksum: "784ad38513e327287e96d511c9ca0219aa94e672"
         mode: "0644"
       when: "'aarch64' in molecule_instances | map(attribute='image_arch') | list | unique"
 
