@@ -10,6 +10,7 @@
     molecule_scenario_name: "{{ lookup('env', 'MOLECULE_SCENARIO_NAME') }}"
     molecule_project_name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
     qemu_cap_hvf: false
+    qemu_cap_kvm: false
     qemu_image_arch: "x86_64"
     qemu_image_format: "qcow2"
     qemu_vm_memory: "512"
