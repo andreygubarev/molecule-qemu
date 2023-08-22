@@ -1,7 +1,5 @@
 # `molecule-qemu`
 
-The development of the Molecule `QEMU` driver was motivated by the author's choice of the Apple M1 as their primary development machine. He wanted to test Ansible roles on the Apple M1 but preferred not to rely on `Docker` for testing due to challenges with Docker's `systemd` support. Author never liked to install supplementary software such as `Vagrant` and `VirtualBox` on development machine. Author is aware of `libvirt` and `virt-manager` but their complexity and the lack of support was frustrating.
-
 Supported platforms:
 * MacOS 13.x (arm64)
 * Ubuntu 22.04 LTS (amd64) (tested on GitHub Actions)
@@ -75,7 +73,7 @@ platforms:
 ### Dependencies
 
 Driver depends on:
-* QEMU (tested with 8.0.2)
+* QEMU (tested with 8.0.2, 8.0.4)
 * mkisofs (tested with 3.02a09)
 
 Install QEMU and CDRTools on macOS:
@@ -164,21 +162,16 @@ platforms:
     network_ssh_port: 2227
 ```
 
-# Troubleshooting
-
-Molecule working directory is: `~/.cache/molecule/<role-name>/<scenario-name>`.
-QEMU images caches is: `~/.cache/molecule/.qemu`.
-
-# Cloud Images URLs
+## Cloud Images URLs
 
 For convenience, here are the URLs for the cloud images used in the examples above.
 
-## [Debian](https://cloud.debian.org/images/cloud/)
+### [Debian](https://cloud.debian.org/images/cloud/)
 * https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
   * https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2
   * https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
 
-## [Ubuntu](https://cloud-images.ubuntu.com/)
+### [Ubuntu](https://cloud-images.ubuntu.com/)
 * https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
   * https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-arm64.img
   * https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
@@ -186,6 +179,14 @@ For convenience, here are the URLs for the cloud images used in the examples abo
   * https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-arm64.img
   * https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
 
+# Troubleshooting
+
+Molecule working directory is: `~/.cache/molecule/<role-name>/<scenario-name>`.
+QEMU images caches is: `~/.cache/molecule/.qemu`.
+
+# Motivation
+
+The development of the Molecule `QEMU` driver was motivated by the author's choice of the Apple M1 as their primary development machine. He wanted to test Ansible roles on the Apple M1 but preferred not to rely on `Docker` for testing due to challenges with Docker's `systemd` support. Author never liked to install supplementary software such as `Vagrant` and `VirtualBox` on development machine. Author is aware of `libvirt` and `virt-manager` but their complexity and the lack of support was frustrating.
 
 # Reference
 
