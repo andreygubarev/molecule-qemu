@@ -1,0 +1,104 @@
+{
+    "$defs": {
+        "MoleculeDriverModel": {
+            "properties": {
+                "name": {
+                    "enum": [
+                        "molecule-qemu"
+                    ],
+                    "title": "Name",
+                    "type": "string"
+                }
+            },
+            "title": "MoleculeDriverModel",
+            "type": "object"
+        },
+        "MoleculePlatformModel": {
+            "additionalProperties": true,
+            "properties": {
+                "image_arch": {
+                    "title": "Image Architecture",
+                    "type": "string",
+                    "enum": [
+                        "x86_64",
+                        "aarch64"
+                    ]
+                },
+                "image_url": {
+                    "title": "Image URL",
+                    "type": "string"
+                },
+                "image_checksum": {
+                    "title": "Image Checksum",
+                    "type": "string"
+                },
+                "image_format": {
+                    "title": "Image Format",
+                    "type": "string",
+                    "enum": [
+                        "qcow2"
+                    ]
+                },
+                "network_mode": {
+                    "title": "Network Mode",
+                    "type": "string",
+                    "enum": [
+                        "vmnet-shared",
+                        "user"
+                    ]
+                },
+                "network_ssh_port": {
+                    "title": "Network SSH Port",
+                    "type": "integer"
+                },
+                "network_ssh_user": {
+                    "title": "Network SSH User",
+                    "type": "string"
+                },
+                "vm_cpus": {
+                    "title": "VM CPUs",
+                    "type": "integer"
+                },
+                "vm_memory": {
+                    "title": "VM Memory",
+                    "type": "integer"
+                },
+                "vm_disk": {
+                    "title": "VM Disk",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "Name",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "image_url",
+                "image_checksum"
+            ],
+            "title": "MoleculePlatformModel",
+            "type": "object"
+        }
+    },
+    "$id": "https://github.com/andreygubarev/molecule-qemu/blob/main/molecule_qemu/driver.json",
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "properties": {
+        "driver": {
+            "$ref": "#/$defs/MoleculeDriverModel"
+        },
+        "platforms": {
+            "items": {
+                "$ref": "#/$defs/MoleculePlatformModel"
+            },
+            "title": "Platforms",
+            "type": "array"
+        }
+    },
+    "required": [
+        "driver",
+        "platforms"
+    ],
+    "title": "Molecule QEMU Driver Schema",
+    "type": "object"
+}
