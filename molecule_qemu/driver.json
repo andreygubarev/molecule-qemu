@@ -81,7 +81,7 @@
             "type": "object"
         }
     },
-    "$id": "https://raw.githubusercontent.com/ansible-community/molecule/main/src/molecule/driver/driver.json",
+    "$id": "https://github.com/andreygubarev/molecule-qemu/blob/main/molecule_qemu/driver.json",
     "$schema": "http://json-schema.org/draft-07/schema",
     "properties": {
         "driver": {
