@@ -72,3 +72,6 @@ class QEMU(Driver):
         return next(
             item for item in instance_config_dict if item["name"] == instance_name
         )
+
+    def schema_file(self):
+        return os.path.join(os.path.dirname(__file__), "driver.json")
