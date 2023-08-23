@@ -1,0 +1,11 @@
+---
+- name: Side effect
+  hosts: localhost
+  gather_facts: false
+  no_log: "{{ molecule_no_log }}"
+
+  environment:
+    http_proxy: "{{ lookup('ansible.builtin.env', 'http_proxy') | default(omit) }}"
+    https_proxy: "{{ lookup('ansible.builtin.env', 'https_proxy') | default(omit) }}"
+
+  tasks: []
