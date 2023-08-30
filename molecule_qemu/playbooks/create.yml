@@ -125,7 +125,7 @@
 
     - name: Check kvm support
       when: ansible_system == 'Linux'
-      ansible.builtin.shell: (grep -q vmx /proc/cpuinfo || grep -q svm /proc/cpuinfo) && lsmod | grep -q kvm
+      ansible.builtin.shell: (egrep -m1 -w '^flags[[:blank:]]*:' /proc/cpuinfo | egrep -wo '(vmx|svm)') && test -e /dev/kvm
       register: kvm_support
       changed_when: false
       ignore_errors: true
