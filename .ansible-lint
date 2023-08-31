@@ -1,4 +1,3 @@
 exclude_paths:
   - molecule_qemu/cookiecutter/{{cookiecutter.molecule_directory}}/{{cookiecutter.scenario_name}}/converge.yml
   - molecule_qemu/cookiecutter/{{cookiecutter.molecule_directory}}/{{cookiecutter.scenario_name}}/prepare.yml
-  - molecule_qemu/playbooks/requirements.yml # https://github.com/ansible/ansible-lint/issues/1369
