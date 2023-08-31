@@ -65,12 +65,14 @@ platforms:
     image_format: qcow2 # optional, default is qcow2
 
     network_mode: vmnet-shared # optional, default is user
+    network_extra_args: "" # optional, only used when network_mode: user
     network_ssh_port: 2222 # optional, default is 22
     network_ssh_user: root # optional, default is root
 
     vm_cpus: 1 # optional, default is 1
     vm_memory: 512 # optional, default is 512
     vm_disk: 8G # optional, default is 8G
+    vm_extra_args: "" # optional, additional arguments to be passed to QEMU, default is empty
 ```
 
 ### Dependencies
@@ -97,7 +99,8 @@ apt-get install mkisofs qemu-system-x86 qemu-utils
 
 This is the default network mode. It uses QEMU's user networking mode.
 
-Mode is selected by setting `network_mode: user` in `molecule.yml`. This is the default mode. SSH port is forwarded to the host and must be unique for each platform (use `network_ssh_port` option to set it). Example:
+Mode is selected by setting `network_mode: user` in `molecule.yml`. This is the default mode. SSH port is forwarded to the host and must be unique for each platform (use `network_ssh_port` option to set it). 
+Additional port forwarding can be achieved by setting `network_extra_args`. Example:
 
 ```yaml
 - name: debian-bullseye-arm64
@@ -106,6 +109,7 @@ Mode is selected by setting `network_mode: user` in `molecule.yml`. This is the 
   image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
   network_mode: user
   network_ssh_port: 2222
+  network_extra_args: hostfwd=tcp::8080-:80
 ```
 
 ### `vmnet-shared` network mode
@@ -169,7 +173,7 @@ platforms:
     image_checksum: sha256:https://cloud-images.ubuntu.com/jammy/current/SHA256SUMS
     network_ssh_port: 2228
 
-- name: ubuntu-jammy-arm64
+  - name: ubuntu-jammy-arm64
     image_arch: aarch64
     image_url: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-arm64.img
     image_checksum: sha256:https://cloud-images.ubuntu.com/jammy/current/SHA256SUMS

@@ -11,11 +11,13 @@
     molecule_project_name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
     qemu_cap_hvf: false
     qemu_cap_kvm: false
+    qemu_extra_args: ""
     qemu_image_arch: "x86_64"
     qemu_image_format: "qcow2"
     qemu_vm_memory: "512"
     qemu_vm_cpus: "1"
     qemu_vm_disk: "8G"
+    qemu_network_extra_args: ""
     qemu_network_mode: "user"
     qemu_timeout_arp: 120
     qemu_timeout_ssh: 600
@@ -46,12 +48,14 @@
           "image_checksum": "{{ item.image_checksum | default(omit) }}",
           "image_format": "{{ item.image_format | default(qemu_image_format) }}",
 
+          "network_extra_args": "{{ item.network_extra_args | default(qemu_network_extra_args) }}",
           "network_mode": "{{ item.network_mode | default(qemu_network_mode) }}",
           "network_mac": "{{ '52:54:00' | community.general.random_mac() | regex_replace('(^|:)0([0-9A-Fa-f])', '\\1\\2') }}",
 
           "network_ssh_port": "{{ item.network_ssh_port | default(22) }}",
           "network_ssh_user": "{{ item.network_ssh_user | default('ansible') }}",
 
+          "vm_extra_args": "{{ item.vm_extra_args | default(qemu_extra_args) }}",
           "vm_cpus": "{{ item.vm_cpus | default(qemu_vm_cpus) }}",
           "vm_memory": "{{ item.vm_memory | default(qemu_vm_memory) }}",
           "vm_disk": "{{ item.vm_disk | default(qemu_vm_disk) }}",
@@ -270,7 +274,11 @@
         -nic vmnet-shared,model=virtio-net-pci,mac={{ item.network_mac }}
         {% endif %}
         {% if item.network_mode == 'user' %}
+        {% if item.network_extra_args == '' %}
         -nic user,model=virtio-net-pci,hostfwd=tcp::{{ item.network_ssh_port }}-:22
+        {% else %}
+        -nic user,model=virtio-net-pci,hostfwd=tcp::{{ item.network_ssh_port }}-:22,{{ item.network_extra_args }}
+        {% endif %}
         {% endif %}
         -display none
         -daemonize
@@ -284,8 +292,10 @@
         {% endif %}
         {% endif %}
         {% if qemu_cap_kvm and item.image_arch == ansible_machine %}
+        -cpu host
         -enable-kvm
         {% endif %}
+        {{ item.vm_extra_args }}
       args:
         creates: "{{ item.path_pid }}"
       loop: "{{ molecule_instances }}"
