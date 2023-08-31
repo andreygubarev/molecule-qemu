@@ -1,0 +1,7 @@
+---
+roles: []
+collections:
+  - name: community.crypto
+    version: 2.15.1
+  - name: community.general
+    version: 7.3.0
