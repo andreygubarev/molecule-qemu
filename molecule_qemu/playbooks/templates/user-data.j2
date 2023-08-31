@@ -6,6 +6,7 @@ users:
     gecos: Ansible User
     groups: admin,users,sudo,wheel
     shell: /bin/bash
+    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
     lock_passwd: true
     ssh_authorized_keys:
       - {{ ssh_keypair.public_key }}
