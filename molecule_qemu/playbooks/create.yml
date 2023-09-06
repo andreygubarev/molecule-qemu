@@ -267,7 +267,7 @@
         -name {{ item.name }}
         -boot d
         -cdrom {{ molecule_ephemeral_directory }}/run/cloud-init/{{ item.name }}.iso
-        -hda {{ item.path_disk }}
+        -drive if=virtio,file={{ item.path_disk }}
         -m {{ item.vm_memory }}
         -smp {{ item.vm_cpus }}
         {% if item.network_mode == 'vmnet-shared' %}
@@ -285,8 +285,12 @@
         -pidfile {{ item.path_pid }}
         {% if item.image_arch == 'aarch64' %}
         -bios {{ molecule_driver_directory }}/QEMU_EFI.fd
-        -cpu cortex-a72
-        -machine virt,highmem=off
+        -machine virt
+        {% if item.image_arch == ansible_machine %}
+        -cpu host
+        {% else %}
+        -cpu cortex-a76
+        {% endif %}
         {% if qemu_cap_hvf %}
         -accel hvf
         {% endif %}
