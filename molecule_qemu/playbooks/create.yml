@@ -39,30 +39,31 @@
 
     - name: Register VMs data
       ansible.builtin.set_fact:
-        instance: {
-          "instance": "molecule-{{ molecule_project_name }}-{{ molecule_scenario_name }}-{{ item.name }}",
-          "name": "{{ item.name }}",
+        instance:
+          {
+            "instance": "molecule-{{ molecule_project_name }}-{{ molecule_scenario_name }}-{{ item.name }}",
+            "name": "{{ item.name }}",
 
-          "image_arch": "{{ item.image_arch | default(qemu_image_arch) }}",
-          "image_url": "{{ item.image_url }}",
-          "image_checksum": "{{ item.image_checksum | default(omit) }}",
-          "image_format": "{{ item.image_format | default(qemu_image_format) }}",
+            "image_arch": "{{ item.image_arch | default(qemu_image_arch) }}",
+            "image_url": "{{ item.image_url }}",
+            "image_checksum": "{{ item.image_checksum | default(omit) }}",
+            "image_format": "{{ item.image_format | default(qemu_image_format) }}",
 
-          "network_extra_args": "{{ item.network_extra_args | default(qemu_network_extra_args) }}",
-          "network_mode": "{{ item.network_mode | default(qemu_network_mode) }}",
-          "network_mac": "{{ '52:54:00' | community.general.random_mac() | regex_replace('(^|:)0([0-9A-Fa-f])', '\\1\\2') }}",
+            "network_extra_args": "{{ item.network_extra_args | default(qemu_network_extra_args) }}",
+            "network_mode": "{{ item.network_mode | default(qemu_network_mode) }}",
+            "network_mac": "{{ '52:54:00' | community.general.random_mac() | regex_replace('(^|:)0([0-9A-Fa-f])', '\\1\\2') }}",
 
-          "network_ssh_port": "{{ item.network_ssh_port | default(22) }}",
-          "network_ssh_user": "{{ item.network_ssh_user | default('ansible') }}",
+            "network_ssh_port": "{{ item.network_ssh_port | default(22) }}",
+            "network_ssh_user": "{{ item.network_ssh_user | default('ansible') }}",
 
-          "vm_extra_args": "{{ item.vm_extra_args | default(qemu_extra_args) }}",
-          "vm_cpus": "{{ item.vm_cpus | default(qemu_vm_cpus) }}",
-          "vm_memory": "{{ item.vm_memory | default(qemu_vm_memory) }}",
-          "vm_disk": "{{ item.vm_disk | default(qemu_vm_disk) }}",
+            "vm_extra_args": "{{ item.vm_extra_args | default(qemu_extra_args) }}",
+            "vm_cpus": "{{ item.vm_cpus | default(qemu_vm_cpus) }}",
+            "vm_memory": "{{ item.vm_memory | default(qemu_vm_memory) }}",
+            "vm_disk": "{{ item.vm_disk | default(qemu_vm_disk) }}",
 
-          "path_disk": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.qcow2",
-          "path_pid": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.pid",
-        }
+            "path_disk": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.qcow2",
+            "path_pid": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.pid",
+          }
       loop: "{{ molecule_yml.platforms }}"
       loop_control:
         label: "{{ item.name }}"
@@ -159,12 +160,13 @@
         type: ed25519
       register: ssh_keypair
 
-    - name: Fetch ARM VMs bios
-      when: "'aarch64' in molecule_instances | map(attribute='image_arch') | list | unique"
+    - name: Install EDK II for supported platforms
+      loop:
+        - x86_64
+        - aarch64
       ansible.builtin.copy:
-        src: "QEMU_EFI.fd"
-        dest: "{{ molecule_driver_directory }}/QEMU_EFI.fd"
-        checksum: "784ad38513e327287e96d511c9ca0219aa94e672"
+        src: "edk2-{{ item }}.fd"
+        dest: "{{ molecule_driver_directory }}/"
         mode: "0644"
 
     ### images ###############################################################
@@ -283,16 +285,14 @@
         -display none
         -daemonize
         -pidfile {{ item.path_pid }}
+        -bios {{ molecule_driver_directory }}/edk2-{{ item.image_arch }}.fd
         {% if item.image_arch == 'aarch64' %}
-        -bios {{ molecule_driver_directory }}/QEMU_EFI.fd
         -machine virt
-        {% if item.image_arch == ansible_machine %}
+        {% if qemu_cap_hvf and item.image_arch == ansible_machine %}
         -cpu host
+        -accel hvf
         {% else %}
         -cpu cortex-a76
-        {% endif %}
-        {% if qemu_cap_hvf %}
-        -accel hvf
         {% endif %}
         {% endif %}
         {% if qemu_cap_kvm and item.image_arch == ansible_machine %}
@@ -353,14 +353,12 @@
           loop_control:
             label: "{{ item.item.name }}"
 
-
     ### ssh ###################################################################
 
     - name: Wait for SSH
       ansible.builtin.wait_for:
         host: "{{ molecule_instances_ipv4[item.name] }}"
         port: "{{ item.network_ssh_port }}"
-        delay: 30
         timeout: "{{ qemu_timeout_ssh }}"
         search_regex: "OpenSSH"
       loop: "{{ molecule_instances }}"
@@ -371,17 +369,18 @@
 
     - name: Prepare VMs config dict
       ansible.builtin.set_fact:
-        instance_conf_dict: {
-          "instance": "{{ item.instance }}",
-          "name": "{{ item.name }}",
-          "address": "{{ molecule_instances_ipv4[item.name] }}",
-          "user": "{{ item.network_ssh_user }}",
-          "port": "{{ item.network_ssh_port }}",
-          "identity_file": "{{ ssh_keypair.filename }}",
-          "pidfile": "{{ item.path_pid }}",
-          "diskfile": "{{ item.path_disk }}",
-          "privileged": "{{ qemu_privileged }}",
-        }
+        instance_conf_dict:
+          {
+            "instance": "{{ item.instance }}",
+            "name": "{{ item.name }}",
+            "address": "{{ molecule_instances_ipv4[item.name] }}",
+            "user": "{{ item.network_ssh_user }}",
+            "port": "{{ item.network_ssh_port }}",
+            "identity_file": "{{ ssh_keypair.filename }}",
+            "pidfile": "{{ item.path_pid }}",
+            "diskfile": "{{ item.path_disk }}",
+            "privileged": "{{ qemu_privileged }}",
+          }
       loop: "{{ molecule_instances }}"
       loop_control:
         label: "{{ item.name }}"
