@@ -285,7 +285,6 @@
         -display none
         -daemonize
         -pidfile {{ item.path_pid }}
-        -bios {{ molecule_driver_directory }}/edk2-{{ item.image_arch }}.fd
         {% if item.image_arch == 'aarch64' %}
         -machine virt
         {% if qemu_cap_hvf and item.image_arch == ansible_machine %}
