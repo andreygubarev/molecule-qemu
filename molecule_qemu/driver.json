@@ -39,6 +39,10 @@
                         "qcow2"
                     ]
                 },
+                "network_extra_args": {
+                    "title": "Network Extra Arguments",
+                    "type": "string"
+                },
                 "network_mode": {
                     "title": "Network Mode",
                     "type": "string",
@@ -53,6 +57,10 @@
                 },
                 "network_ssh_user": {
                     "title": "Network SSH User",
+                    "type": "string"
+                },
+                "vm_extra_args": {
+                    "title": "VM Extra Arguments",
                     "type": "string"
                 },
                 "vm_cpus": {

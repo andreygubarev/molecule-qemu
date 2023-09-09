@@ -3,24 +3,28 @@
 Molecule QEMU driver for testing Ansible roles.
 
 Supported platforms:
-* MacOS 13.x (arm64)
-* Ubuntu 22.04 LTS (amd64) (tested on GitHub Actions)
+
+- MacOS 13.x (arm64)
+- Ubuntu 22.04 LTS (amd64) (tested on GitHub Actions)
 
 Support guest OS:
-* Debian 11 (arm64, amd64)
-* Debian 12 (arm64, amd64)
-* Ubuntu 20.04 LTS (arm64, amd64)
-* Ubuntu 22.04 LTS (arm64, amd64)
+
+- Debian 11 (arm64, amd64)
+- Debian 12 (arm64, amd64)
+- Ubuntu 20.04 LTS (arm64, amd64)
+- Ubuntu 22.04 LTS (arm64, amd64)
 
 Support of other platforms and guest OS is possible, but not tested. Please, open an issue if you want to add support for other platforms.
 
 Supported network modes:
-* `user` - QEMU's user networking mode
-* `vmnet-shared` - QEMU's `vmnet-shared` networking mode (MacOS only)
+
+- `user` - QEMU's user networking mode
+- `vmnet-shared` - QEMU's `vmnet-shared` networking mode (MacOS only)
 
 ## Quick start
 
 Install `molecule-qemu` python package:
+
 ```bash
 pip install molecule-qemu
 ```
@@ -55,6 +59,7 @@ verifier:
 ```
 
 Full list of supported options:
+
 ```yaml
 platforms:
   - name: debian-bullseye-arm64
@@ -65,19 +70,22 @@ platforms:
     image_format: qcow2 # optional, default is qcow2
 
     network_mode: vmnet-shared # optional, default is user
+    network_extra_args: "" # optional, only used when network_mode: user
     network_ssh_port: 2222 # optional, default is 22
     network_ssh_user: root # optional, default is root
 
     vm_cpus: 1 # optional, default is 1
     vm_memory: 512 # optional, default is 512
     vm_disk: 8G # optional, default is 8G
+    vm_extra_args: "" # optional, additional arguments to be passed to QEMU, default is empty
 ```
 
 ### Dependencies
 
 Driver depends on:
-* QEMU (tested with 8.0.2, 8.0.4)
-* mkisofs (tested with 3.02a09)
+
+- QEMU (tested with 8.0.2, 8.0.4)
+- mkisofs (tested with 3.02a09)
 
 Install QEMU and CDRTools on macOS:
 
@@ -97,7 +105,8 @@ apt-get install mkisofs qemu-system-x86 qemu-utils
 
 This is the default network mode. It uses QEMU's user networking mode.
 
-Mode is selected by setting `network_mode: user` in `molecule.yml`. This is the default mode. SSH port is forwarded to the host and must be unique for each platform (use `network_ssh_port` option to set it). Example:
+Mode is selected by setting `network_mode: user` in `molecule.yml`. This is the default mode. SSH port is forwarded to the host and must be unique for each platform (use `network_ssh_port` option to set it).
+Additional port forwarding can be achieved by setting `network_extra_args`. Example:
 
 ```yaml
 - name: debian-bullseye-arm64
@@ -106,11 +115,12 @@ Mode is selected by setting `network_mode: user` in `molecule.yml`. This is the 
   image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
   network_mode: user
   network_ssh_port: 2222
+  network_extra_args: hostfwd=tcp::8080-:80
 ```
 
 ### `vmnet-shared` network mode
 
-This mode uses QEMU's `vmnet-shared` networking mode. It requires `vmnet.framework` to be installed on the host. This mode is only supported on MacOS. It requires *passwordless* `sudo` access for current user.
+This mode uses QEMU's `vmnet-shared` networking mode. It requires `vmnet.framework` to be installed on the host. This mode is only supported on MacOS. It requires _passwordless_ `sudo` access for current user.
 
 Mode is selected by setting `network_mode: vmnet-shared` in `molecule.yml`. Example:
 
@@ -130,7 +140,6 @@ See [tests](https://github.com/andreygubarev/molecule-qemu/tree/main/tests/molec
 
 ```yaml
 platforms:
-
   - name: debian-bullseye-amd64
     image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2
     image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
@@ -169,7 +178,7 @@ platforms:
     image_checksum: sha256:https://cloud-images.ubuntu.com/jammy/current/SHA256SUMS
     network_ssh_port: 2228
 
-- name: ubuntu-jammy-arm64
+  - name: ubuntu-jammy-arm64
     image_arch: aarch64
     image_url: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-arm64.img
     image_checksum: sha256:https://cloud-images.ubuntu.com/jammy/current/SHA256SUMS
@@ -181,20 +190,22 @@ platforms:
 For convenience, here are the URLs for the cloud images used in the examples above.
 
 ### [Debian](https://cloud.debian.org/images/cloud/)
-* https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
-  * https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2
-  * https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
-* https://cloud.debian.org/images/cloud/bookworm/latest/SHA512SUMS
-  * https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2
-  * https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-arm64.raw
+
+- https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
+  - https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-amd64.qcow2
+  - https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
+- https://cloud.debian.org/images/cloud/bookworm/latest/SHA512SUMS
+  - https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-amd64.qcow2
+  - https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-arm64.raw
 
 ### [Ubuntu](https://cloud-images.ubuntu.com/)
-* https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
-  * https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-arm64.img
-  * https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
-* https://cloud-images.ubuntu.com/jammy/current/SHA256SUMS
-  * https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-arm64.img
-  * https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+
+- https://cloud-images.ubuntu.com/focal/current/SHA256SUMS
+  - https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-arm64.img
+  - https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
+- https://cloud-images.ubuntu.com/jammy/current/SHA256SUMS
+  - https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-arm64.img
+  - https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
 
 # Troubleshooting
 
@@ -208,12 +219,11 @@ The development of the Molecule `QEMU` driver was motivated by the author's choi
 
 # Reference
 
-* [Ansible](https://www.ansible.com/)
-* [Molecule](https://molecule.readthedocs.io/en/latest/)
-* [QEMU](https://www.qemu.org/)
-* [QEMU BIOS](https://packages.debian.org/bullseye/qemu-efi-aarch64)
+- [Ansible](https://www.ansible.com/)
+- [Molecule](https://molecule.readthedocs.io/en/latest/)
+- [QEMU](https://www.qemu.org/)
+- [QEMU BIOS](https://packages.debian.org/bullseye/qemu-efi-aarch64)
 
 ## QEMU vmnet-shared networking
 
-* [vmnet.framework modes](https://lore.kernel.org/all/20220315230741.21578-7-Vladislav.Yaroshchuk@jetbrains.com/T/)
-
+- [vmnet.framework mode
