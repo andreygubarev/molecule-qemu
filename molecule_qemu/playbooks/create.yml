@@ -162,7 +162,6 @@
 
     - name: Install EDK II for supported platforms
       loop:
-        - x86_64
         - aarch64
       ansible.builtin.copy:
         src: "edk2-{{ item }}.fd"
@@ -285,8 +284,8 @@
         -display none
         -daemonize
         -pidfile {{ item.path_pid }}
-        -bios {{ molecule_driver_directory }}/edk2-{{ item.image_arch }}.fd
         {% if item.image_arch == 'aarch64' %}
+        -bios {{ molecule_driver_directory }}/edk2-{{ item.image_arch }}.fd
         -machine virt
         {% if qemu_cap_hvf and item.image_arch == ansible_machine %}
         -cpu host

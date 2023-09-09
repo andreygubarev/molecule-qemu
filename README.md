@@ -72,7 +72,7 @@ platforms:
     network_mode: vmnet-shared # optional, default is user
     network_extra_args: "" # optional, only used when network_mode: user
     network_ssh_port: 2222 # optional, default is 22
-    network_ssh_user: root # optional, default is root
+    network_ssh_user: ansible # optional, default is ansible
 
     vm_cpus: 1 # optional, default is 1
     vm_memory: 512 # optional, default is 512
@@ -84,7 +84,7 @@ platforms:
 
 Driver depends on:
 
-- QEMU (tested with 8.0.2, 8.0.4)
+- QEMU (tested with 8.0.2, 8.0.4, 8.1.0)
 - mkisofs (tested with 3.02a09)
 
 Install QEMU and CDRTools on macOS:
