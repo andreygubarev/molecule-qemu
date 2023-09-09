@@ -54,7 +54,7 @@
             "network_mac": "{{ '52:54:00' | community.general.random_mac() | regex_replace('(^|:)0([0-9A-Fa-f])', '\\1\\2') }}",
 
             "network_ssh_port": "{{ item.network_ssh_port | default(22) }}",
-            "network_ssh_user": "{{ item.network_ssh_user | default('ansible') }}",
+            "network_ssh_user": "{{ item.network_ssh_user | default('root') }}",
 
             "vm_extra_args": "{{ item.vm_extra_args | default(qemu_extra_args) }}",
             "vm_cpus": "{{ item.vm_cpus | default(qemu_vm_cpus) }}",

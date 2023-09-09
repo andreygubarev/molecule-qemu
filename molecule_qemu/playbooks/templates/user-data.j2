@@ -1,4 +1,19 @@
 #cloud-config
+packages:
+  - ca-certificates
+  - curl
+  - locales-all
+
+ssh_authorized_keys:
+- {{ ssh_keypair.public_key }}
+
+output:
+  all: ">> /var/log/cloud-init-output.log"
+
+runcmd:
+  - sed -i 's/.*\(ssh-.*\)/\1/p' /root/.ssh/authorized_keys
+  - sed -i 's/^#PermitRootLogin prohibit-password/PermitRootLogin prohibit-password/' /etc/ssh/sshd_config
+  - systemctl restart ssh
 
 ssh_pwauth: false
 users:
