@@ -162,6 +162,7 @@
 
     - name: Install EDK II for supported platforms
       loop:
+        - x86_64
         - aarch64
       ansible.builtin.copy:
         src: "edk2-{{ item }}.fd"
