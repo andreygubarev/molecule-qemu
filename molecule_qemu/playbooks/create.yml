@@ -292,7 +292,7 @@
         -cpu host
         -accel hvf
         {% else %}
-        -cpu cortex-a76
+        -cpu cortex-a72
         {% endif %}
         {% endif %}
         {% if qemu_cap_kvm and item.image_arch == ansible_machine %}
