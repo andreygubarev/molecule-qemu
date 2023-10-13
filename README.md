@@ -226,4 +226,4 @@ The development of the Molecule `QEMU` driver was motivated by the author's choi
 
 ## QEMU vmnet-shared networking
 
-- [vmnet.framework mode
+- [vmnet.framework modes](https://lore.kernel.org/all/20220315230741.21578-7-Vladislav.Yaroshchuk@jetbrains.com/T/)
