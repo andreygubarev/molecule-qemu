@@ -267,24 +267,29 @@
       ansible.builtin.command: >-
         qemu-system-{{ item.image_arch }}
         -name {{ item.name }}
+        -daemonize
+        -pidfile {{ item.path_pid }}
+
+        -display none
+        -m {{ item.vm_memory }}
+        -smp {{ item.vm_cpus }}
+
         -boot d
         -cdrom {{ molecule_ephemeral_directory }}/run/cloud-init/{{ item.name }}.iso
         -drive if=virtio,file={{ item.path_disk }}
-        -m {{ item.vm_memory }}
-        -smp {{ item.vm_cpus }}
+
         {% if item.network_mode == 'vmnet-shared' %}
-        -nic vmnet-shared,model=virtio-net-pci,mac={{ item.network_mac }}
+          -nic vmnet-shared,model=virtio-net-pci,mac={{ item.network_mac }}
         {% endif %}
+
         {% if item.network_mode == 'user' %}
-        {% if item.network_extra_args == '' %}
-        -nic user,model=virtio-net-pci,hostfwd=tcp::{{ item.network_ssh_port }}-:22
-        {% else %}
-        -nic user,model=virtio-net-pci,hostfwd=tcp::{{ item.network_ssh_port }}-:22,{{ item.network_extra_args }}
+          {% if item.network_extra_args == '' %}
+            -nic user,model=virtio-net-pci,hostfwd=tcp::{{ item.network_ssh_port }}-:22
+          {% else %}
+            -nic user,model=virtio-net-pci,hostfwd=tcp::{{ item.network_ssh_port }}-:22,{{ item.network_extra_args }}
+          {% endif %}
         {% endif %}
-        {% endif %}
-        -display none
-        -daemonize
-        -pidfile {{ item.path_pid }}
+
         -bios {{ molecule_driver_directory }}/edk2-{{ item.image_arch }}.fd
         {% if item.image_arch == 'aarch64' %}
         -machine virt
