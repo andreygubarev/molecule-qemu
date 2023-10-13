@@ -311,22 +311,18 @@
 
         {% if item.image_arch == 'aarch64' %}
           -machine virt
-          {% if item.image_arch == qemu_machine %}
+          {% if item.image_arch == qemu_machine and qemu_cap_hvf %}
             -cpu host
-            {% if qemu_cap_hvf %}
-              -accel hvf
-            {% endif %}
+            -accel hvf
           {% else %}
             -cpu cortex-a72
           {% endif %}
         {% endif %}
 
         {% if item.image_arch == 'x86_64' %}
-          {% if item.image_arch == qemu_machine %}
+          {% if item.image_arch == qemu_machine and qemu_cap_kvm %}
             -cpu host
-            {% if qemu_cap_kvm %}
-              -enable-kvm
-            {% endif %}
+            -enable-kvm
           {% endif %}
         {% endif %}
 
