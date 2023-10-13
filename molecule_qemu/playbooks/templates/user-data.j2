@@ -2,11 +2,15 @@
 
 ssh_pwauth: false
 users:
-  - name: ansible
-    gecos: Ansible User
+  - name: root
+    ssh_authorized_keys:
+      - {{ ssh_keypair.public_key }}
+  {% if item.network_ssh_user != 'root' -%}
+  - name: {{ item.network_ssh_user }}
     groups: admin,users,sudo,wheel
     shell: /bin/bash
     sudo: ["ALL=(ALL) NOPASSWD:ALL"]
     lock_passwd: true
     ssh_authorized_keys:
       - {{ ssh_keypair.public_key }}
+  {% endif %}
