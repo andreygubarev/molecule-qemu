@@ -140,6 +140,23 @@
       ansible.builtin.set_fact:
         qemu_cap_kvm: "{{ kvm_support.rc == 0 }}"
 
+    - name: Set QEMU machine (x86_64)
+      when: ansible_machine == 'x86_64'
+      ansible.builtin.set_fact:
+        qemu_machine: "x86_64"
+
+    - name: Set QEMU machine (arm64)
+      when: ansible_machine == 'arm64'
+      ansible.builtin.set_fact:
+        qemu_machine: "aarch64"
+
+    - name: Assert QEMU machine
+      ansible.builtin.assert:
+        that:
+          - qemu_machine is defined
+        fail_msg: "QEMU machine is not supported"
+        success_msg: "QEMU machine is supported"
+
     ### prerequisites #########################################################
 
     - name: Create driver directory
@@ -291,19 +308,28 @@
         {% endif %}
 
         -bios {{ molecule_driver_directory }}/edk2-{{ item.image_arch }}.fd
+
         {% if item.image_arch == 'aarch64' %}
-        -machine virt
-        {% if qemu_cap_hvf and item.image_arch == ansible_machine %}
-        -cpu host
-        -accel hvf
-        {% else %}
-        -cpu cortex-a72
+          -machine virt
+          {% if item.image_arch == qemu_machine %}
+            -cpu host
+            {% if qemu_cap_hvf %}
+              -accel hvf
+            {% endif %}
+          {% else %}
+            -cpu cortex-a72
+          {% endif %}
         {% endif %}
+
+        {% if item.image_arch == 'x86_64' %}
+          {% if item.image_arch == qemu_machine %}
+            -cpu host
+            {% if qemu_cap_kvm %}
+              -enable-kvm
+            {% endif %}
+          {% endif %}
         {% endif %}
-        {% if qemu_cap_kvm and item.image_arch == ansible_machine %}
-        -cpu host
-        -enable-kvm
-        {% endif %}
+
         {{ item.vm_extra_args }}
       args:
         creates: "{{ item.path_pid }}"
