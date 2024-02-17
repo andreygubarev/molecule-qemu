@@ -78,6 +78,22 @@
                 "name": {
                     "title": "Name",
                     "type": "string"
+                },
+                "disk_type": {
+                    "title": "Disk Type",
+                    "type": "string",
+                    "enum": [
+                        "virtio",
+                        "virtio-scsi"
+                    ]
+                },
+                "bios_type": {
+                    "title": "Bios Type",
+                    "type": "string",
+                    "enum": [
+                        "uefi",
+                        "bios"
+                    ]
                 }
             },
             "required": [

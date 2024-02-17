@@ -19,6 +19,8 @@
     qemu_vm_disk: "8G"
     qemu_network_extra_args: ""
     qemu_network_mode: "user"
+    qemu_bios_type: "uefi"
+    qemu_disk_type: "virtio"
     qemu_timeout_arp: 120
     qemu_timeout_ssh: 600
 
@@ -60,6 +62,10 @@
             "vm_cpus": "{{ item.vm_cpus | default(qemu_vm_cpus) }}",
             "vm_memory": "{{ item.vm_memory | default(qemu_vm_memory) }}",
             "vm_disk": "{{ item.vm_disk | default(qemu_vm_disk) }}",
+            
+            "disk_type": "{{ item.disk_type | default(qemu_disk_type) }}",
+
+            "bios_type": "{{ item.bios_type | default(qemu_bios_type) }}",
 
             "path_disk": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.qcow2",
             "path_pid": "{{ molecule_ephemeral_directory }}/run/{{ item.name }}.pid",
@@ -89,6 +95,8 @@
         that:
           - item.image_arch in ['x86_64', 'aarch64']
           - item.network_mode in ['user', 'vmnet-shared']
+          - item.disk_type in ['virtio', 'virtio-scsi']
+          - item.bios_type in ['uefi', 'bios']
         fail_msg: "Molecule instance {{ item.name }} configuration is not supported"
         success_msg: "Molecule instance {{ item.name }} configuration is supported"
       loop: "{{ molecule_instances }}"
@@ -293,7 +301,13 @@
 
         -boot d
         -cdrom {{ molecule_ephemeral_directory }}/run/cloud-init/{{ item.name }}.iso
-        -drive if=virtio,file={{ item.path_disk }}
+        {% if item.disk_type == 'virtio' %}
+          -drive if=virtio,file={{ item.path_disk }}
+        {% elif item.disk_type == 'virtio-scsi' %}
+          -drive if=none,id=hd,file={{ item.path_disk }}
+          -device virtio-scsi-pci,id=scsi
+          -device scsi-hd,drive=hd
+        {% endif %}
 
         {% if item.network_mode == 'vmnet-shared' %}
           -nic vmnet-shared,model=virtio-net-pci,mac={{ item.network_mac }}
@@ -307,7 +321,9 @@
           {% endif %}
         {% endif %}
 
-        -bios {{ molecule_driver_directory }}/edk2-{{ item.image_arch }}.fd
+        {% if item.bios_type == 'uefi' %}
+          -bios {{ molecule_driver_directory }}/edk2-{{ item.image_arch }}.fd
+        {% endif %}
 
         {% if item.image_arch == 'aarch64' %}
           -machine virt

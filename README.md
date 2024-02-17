@@ -21,6 +21,17 @@ Supported network modes:
 - `user` - QEMU's user networking mode
 - `vmnet-shared` - QEMU's `vmnet-shared` networking mode (MacOS only)
 
+
+Supported disk types:
+
+- `virtio` - QEMU's virtio disk type
+- `virtio-scsi` - QEMU's virtio-scsi disk type
+
+Supported BIOS types:
+
+- `uefi` - QEMU's uefi used for image with uefi configured
+- `bios` - QEMU's bios used for image with bios configured
+
 ## Quick start
 
 Install `molecule-qemu` python package:
@@ -78,6 +89,10 @@ platforms:
     vm_memory: 512 # optional, default is 512
     vm_disk: 8G # optional, default is 8G
     vm_extra_args: "" # optional, additional arguments to be passed to QEMU, default is empty
+
+    disk_type: virtio-scsi # optional, default is virtio
+
+    bios_type: bios # optional, default is uefi
 ```
 
 ### Dependencies
