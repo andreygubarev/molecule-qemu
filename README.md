@@ -99,7 +99,7 @@ platforms:
 
 Driver depends on:
 
-- QEMU (tested with 8.0.2, 8.0.4, 8.1.0)
+- QEMU (tested with 8.0.2, 8.0.4, 8.1.0, 8.2.1)
 - mkisofs (tested with 3.02a09)
 
 Install QEMU and CDRTools on macOS:
