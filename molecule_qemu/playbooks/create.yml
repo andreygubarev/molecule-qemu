@@ -364,19 +364,22 @@
       ansible.builtin.set_fact:
         molecule_instances_ipv4: {}
 
-    - name: Create instances IPv4 dict
+    - name: Create instances ports empty dict
       ansible.builtin.set_fact:
-        molecule_instances_ipv4: "{{ molecule_instances_ipv4 | combine({item.name: '127.0.0.1'}) }}"
-      loop: "{{ molecule_instances }}"
-      loop_control:
-        label: "{{ item.name }}"
+        molecule_instances_ports: {}
 
     ### qemu network: user ####################################################
-
     - name: Configure QEMU network (user)
       when: qemu_network_mode == 'user'
       block:
-        - name: Get forwarded ports
+        - name: Create instances IPv4 dict (user)
+          ansible.builtin.set_fact:
+            molecule_instances_ipv4: "{{ molecule_instances_ipv4 | combine({item.name: '127.0.0.1'}) }}"
+          loop: "{{ molecule_instances }}"
+          loop_control:
+            label: "{{ item.name }}"
+
+        - name: Get forwarded ports (user)
           become: "{{ qemu_privileged }}"
           ansible.builtin.shell: |
             set -o pipefail
@@ -386,11 +389,7 @@
             label: "{{ item.name }}"
           register: molecule_instances_ports_output
 
-        - name: Create instances ports empty dict
-          ansible.builtin.set_fact:
-            molecule_instances_ports: {}
-
-        - name: Create instances ports dict
+        - name: Create instances ports dict (user)
           ansible.builtin.set_fact:
             molecule_instances_ports: "{{ molecule_instances_ports | combine({item.item.name: item.stdout}) }}"
           loop: "{{ molecule_instances_ports_output.results }}"
@@ -421,6 +420,13 @@
           loop: "{{ molecule_instances_arp.results }}"
           loop_control:
             label: "{{ item.item.name }}"
+
+        - name: Create instances ports dict (vmnet-shared)
+          ansible.builtin.set_fact:
+            molecule_instances_ports: "{{ molecule_instances_ports | combine({item.name: '22'}) }}"
+          loop: "{{ molecule_instances }}"
+          loop_control:
+            label: "{{ item.name }}"
 
     ### ssh ###################################################################
 
