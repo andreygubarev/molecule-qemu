@@ -371,6 +371,32 @@
       loop_control:
         label: "{{ item.name }}"
 
+    ### qemu network: user ####################################################
+
+    - name: Configure QEMU network (user)
+      when: qemu_network_mode == 'user'
+      block:
+        - name: Get forwarded ports
+          become: "{{ qemu_privileged }}"
+          ansible.builtin.shell: |
+            set -o pipefail
+            lsof -iTCP -sTCP:LISTEN -P -n | grep $(cat {{ item.path_pid }}) | awk '{print $9}' | sed 's/.*://'
+          loop: "{{ molecule_instances }}"
+          loop_control:
+            label: "{{ item.name }}"
+          register: molecule_instances_ports_output
+
+        - name: Create instances ports empty dict
+          ansible.builtin.set_fact:
+            molecule_instances_ports: {}
+
+        - name: Create instances ports dict
+          ansible.builtin.set_fact:
+            molecule_instances_ports: "{{ molecule_instances_ports | combine({item.item.name: item.stdout}) }}"
+          loop: "{{ molecule_instances_ports_output.results }}"
+          loop_control:
+            label: "{{ item.item.name }}"
+
     ### qemu network: vmnet-shared ############################################
 
     - name: Configure QEMU network (vmnet-shared)
@@ -401,7 +427,7 @@
     - name: Wait for SSH
       ansible.builtin.wait_for:
         host: "{{ molecule_instances_ipv4[item.name] }}"
-        port: "{{ item.network_ssh_port }}"
+        port: "{{ molecule_instances_ports[item.name] }}"
         timeout: "{{ qemu_timeout_ssh }}"
         search_regex: "OpenSSH"
       loop: "{{ molecule_instances }}"
@@ -418,7 +444,7 @@
             "name": "{{ item.name }}",
             "address": "{{ molecule_instances_ipv4[item.name] }}",
             "user": "{{ item.network_ssh_user }}",
-            "port": "{{ item.network_ssh_port }}",
+            "port": "{{ molecule_instances_ports[item.name] }}",
             "identity_file": "{{ ssh_keypair.filename }}",
             "pidfile": "{{ item.path_pid }}",
             "diskfile": "{{ item.path_disk }}",
