@@ -118,7 +118,7 @@
       when: qemu_network_mode == 'user'
       ansible.builtin.assert:
         that:
-          - molecule_instances | map(attribute='network_ssh_port') | list | unique | length == molecule_instances | length
+          - molecule_instances | map(attribute='network_ssh_port') | list | reject('eq', '0') | unique | length == molecule_instances | map(attribute='network_ssh_port') | list | reject('eq', '0') | length
         fail_msg: "Molecule instances SSH are not properly configured for 'user' network"
         success_msg: "Molecule instances SSH are properly configured for 'user' network"
 
