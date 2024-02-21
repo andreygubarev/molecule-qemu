@@ -130,7 +130,7 @@
 
     - name: Check kvm support
       when: ansible_system == 'Linux'
-      ansible.builtin.shell: (egrep -m1 -w '^flags[[:blank:]]*:' /proc/cpuinfo | egrep -wo '(vmx|svm)') && test -e /dev/kvm
+      ansible.builtin.shell: (egrep -m1 -w '^flags[[:blank:]]*:' /proc/cpuinfo | egrep -wo '(vmx|svm)') && test -e /dev/kvm && test -r /dev/kvm && test -w /dev/kvm
       register: kvm_support
       changed_when: false
       ignore_errors: true
