@@ -388,6 +388,7 @@
           loop_control:
             label: "{{ item.name }}"
           register: molecule_instances_ports_output
+          changed_when: false
 
         - name: Create instances ports dict (user)
           ansible.builtin.set_fact:
