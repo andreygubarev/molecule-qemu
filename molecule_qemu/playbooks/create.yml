@@ -55,14 +55,14 @@
             "network_mode": "{{ item.network_mode | default(qemu_network_mode) }}",
             "network_mac": "{{ '52:54:00' | community.general.random_mac() | regex_replace('(^|:)0([0-9A-Fa-f])', '\\1\\2') }}",
 
-            "network_ssh_port": "{{ item.network_ssh_port | default(22) }}",
+            "network_ssh_port": "{{ item.network_ssh_port | default(2222) }}",
             "network_ssh_user": "{{ item.network_ssh_user | default('ansible') }}",
 
             "vm_extra_args": "{{ item.vm_extra_args | default(qemu_extra_args) }}",
             "vm_cpus": "{{ item.vm_cpus | default(qemu_vm_cpus) }}",
             "vm_memory": "{{ item.vm_memory | default(qemu_vm_memory) }}",
             "vm_disk": "{{ item.vm_disk | default(qemu_vm_disk) }}",
-            
+
             "disk_type": "{{ item.disk_type | default(qemu_disk_type) }}",
 
             "bios_type": "{{ item.bios_type | default(qemu_bios_type) }}",
