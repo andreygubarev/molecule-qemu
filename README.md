@@ -21,7 +21,6 @@ Supported network modes:
 - `user` - QEMU's user networking mode
 - `vmnet-shared` - QEMU's `vmnet-shared` networking mode (MacOS only)
 
-
 Supported disk types:
 
 - `virtio` - QEMU's virtio disk type
@@ -82,7 +81,7 @@ platforms:
 
     network_mode: vmnet-shared # optional, default is user
     network_extra_args: "" # optional, only used when network_mode: user
-    network_ssh_port: 2222 # optional, default is 22
+    network_ssh_port: 2222 # optional, default is 2222
     network_ssh_user: ansible # optional, default is ansible
 
     vm_cpus: 1 # optional, default is 1
