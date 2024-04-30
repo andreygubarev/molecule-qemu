@@ -13,6 +13,7 @@ Support guest OS:
 - Debian 12 (arm64, amd64)
 - Ubuntu 20.04 LTS (arm64, amd64)
 - Ubuntu 22.04 LTS (arm64, amd64)
+- Ubuntu 24.04 LTS (arm64, amd64)
 
 Support of other platforms and guest OS is possible, but not tested. Please, open an issue if you want to add support for other platforms.
 
@@ -98,7 +99,7 @@ platforms:
 
 Driver depends on:
 
-- QEMU (tested with 8.0.2, 8.0.4, 8.1.0)
+- QEMU (tested with 6.2.0, 8.0.2, 8.0.4, 8.1.0)
 - mkisofs (tested with 3.02a09)
 
 Install QEMU and CDRTools on macOS:
@@ -197,6 +198,16 @@ platforms:
     image_url: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-arm64.img
     image_checksum: sha256:https://cloud-images.ubuntu.com/jammy/current/SHA256SUMS
     network_ssh_port: 2229
+
+   - name: ubuntu-noble-amd64
+     image_url: https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
+     image_checksum: sha256:https://cloud-images.ubuntu.com/noble/current/SHA256SUMS
+     network_ssh_port: 2230
+
+   - name: ubuntu-noble-arm64
+     image_url: https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-arm64.img
+     image_checksum: sha256:https://cloud-images.ubuntu.com/noble/current/SHA256SUMS
+     network_ssh_port: 2231
 ```
 
 ## Cloud Images URLs
@@ -220,6 +231,9 @@ For convenience, here are the URLs for the cloud images used in the examples abo
 - https://cloud-images.ubuntu.com/jammy/current/SHA256SUMS
   - https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-arm64.img
   - https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+- https://cloud-images.ubuntu.com/noble/current/SHA256SUMS
+  - https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-arm64.img
+  - https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
 
 # Troubleshooting
 
