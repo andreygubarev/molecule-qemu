@@ -12,10 +12,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up direnv
+        uses: andreygubarev/direnv-action@v1
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+
+      - name: Install pipenv
+        run: pip install pipenv
 
       - name: Install system dependencies
         run: |
@@ -23,4 +29,6 @@ jobs:
           sudo apt-get install -yq --no-install-recommends mkisofs qemu-system-x86 qemu-utils
 
       - name: Run test
-        run: make test-platform-amd64
+        run: |
+          direnv allow .
+          direnv exec . make test-platform-amd64
