@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up direnv
-        uses: andreygubarev/direnv-action@v1
+        uses: andreygubarev/setup-direnv@v1
 
       - name: Set up Python
         uses: actions/setup-python@v5
