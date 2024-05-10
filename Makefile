@@ -9,13 +9,13 @@ lint: ## Lint
 	ansible-lint -v molecule_qemu
 	pycodestyle molecule_qemu
 
-.PHONY: test  ## Test
-test:
+.PHONY: test
+test: ## Test
 	pip install -e .
 	cd tests && molecule test
 
 .PHONY: test-%
-test-%: virtualenv
+test-%:
 	pip install -e .
 	cd tests && molecule test -s $*
 
