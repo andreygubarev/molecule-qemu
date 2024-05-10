@@ -16,6 +16,11 @@ Support guest OS:
 - Ubuntu 22.04 LTS (arm64, amd64)
 - Ubuntu 24.04 LTS (arm64, amd64)
 
+Supported Ansible versions:
+
+- 8.x
+- 9.x
+
 Support of other platforms and guest OS is possible, but not tested. Please, open an issue if you want to add support for other platforms.
 
 Supported network modes:
