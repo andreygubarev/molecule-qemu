@@ -21,4 +21,6 @@ jobs:
         uses: andreygubarev/direnv-action@v1
 
       - name: Lint with ansible-lint
-        run: direnv exec ansible-lint -v
+        run: |
+          direnv allow
+          direnv exec ansible-lint -v
