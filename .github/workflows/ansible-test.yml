@@ -31,4 +31,5 @@ jobs:
       - name: Run test
         run: |
           direnv allow .
+          direnv exec . ansible-galaxy collection install -r requirements.yml
           direnv exec . make test-platform-amd64
