@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -30,7 +30,7 @@ jobs:
         run: python -m build --sdist --wheel --outdir dist/ .
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: python-package
           path: 'dist/*'
@@ -63,19 +63,19 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Check if pre-release
         id: prerelease
         run: |
           echo "prerelease=$(if [[ "${{ github.ref }}" == *"rc"* ]]; then echo "true"; else echo "false"; fi)" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: python-package
 
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           prerelease: ${{ steps.prerelease.outputs.prerelease }}
           generate_release_notes: true
