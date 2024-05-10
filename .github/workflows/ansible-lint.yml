@@ -22,5 +22,5 @@ jobs:
 
       - name: Lint with ansible-lint
         run: |
-          direnv allow
-          direnv exec ansible-lint -v
+          direnv allow .
+          direnv exec . ansible-lint -v
