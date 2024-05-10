@@ -56,10 +56,10 @@ dependency:
 driver:
   name: molecule-qemu
 platforms:
-  - name: debian-bullseye-arm64
+  - name: debian-bookworm-arm64
     image_arch: aarch64
-    image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
-    image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
+    image_url: https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-arm64.qcow2
+    image_checksum: sha512:https://cloud.debian.org/images/cloud/bookworm/latest/SHA512SUMS
     network_mode: vmnet-shared
 provisioner:
   name: ansible
@@ -74,11 +74,11 @@ Full list of supported options:
 
 ```yaml
 platforms:
-  - name: debian-bullseye-arm64
+  - name: debian-bookworm-arm64
 
     image_arch: aarch64 # optional, default is x86_64
-    image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
-    image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
+    image_url: https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-arm64.qcow2
+    image_checksum: sha512:https://cloud.debian.org/images/cloud/bookworm/latest/SHA512SUMS
     image_format: qcow2 # optional, default is qcow2
 
     network_mode: vmnet-shared # optional, default is user
@@ -127,8 +127,8 @@ Additional port forwarding can be achieved by setting `network_extra_args`. Exam
 ```yaml
 - name: debian-bullseye-arm64
   image_arch: aarch64
-  image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
-  image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
+    image_url: https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-arm64.qcow2
+    image_checksum: sha512:https://cloud.debian.org/images/cloud/bookworm/latest/SHA512SUMS
   network_mode: user
   network_ssh_port: 2222
   network_extra_args: hostfwd=tcp::8080-:80
@@ -143,8 +143,8 @@ Mode is selected by setting `network_mode: vmnet-shared` in `molecule.yml`. Exam
 ```yaml
 - name: debian-bullseye-arm64
   image_arch: aarch64
-  image_url: https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-genericcloud-arm64.qcow2
-  image_checksum: sha512:https://cloud.debian.org/images/cloud/bullseye/latest/SHA512SUMS
+  image_url: https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-genericcloud-arm64.qcow2
+  image_checksum: sha512:https://cloud.debian.org/images/cloud/bookworm/latest/SHA512SUMS
   network_mode: vmnet-shared
 ```
 
