@@ -12,13 +12,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up direnv
+        uses: andreygubarev/direnv-action@v1
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+          cache: 'pipenv'
 
-      - name: Install dependencies
-        run: pip install ansible-lint
+      - name: Install pipenv
+        run: pip install pipenv
 
       - name: Lint with ansible-lint
-        run: ansible-lint -v
+        run: |
+          direnv allow .
+          direnv exec . ansible-lint -v

@@ -18,16 +18,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up direnv
+        uses: andreygubarev/direnv-action@v1
+
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+          cache: 'pipenv'
 
-      - name: Install dependencies
-        run: python -m pip install build --user
+      - name: Install pipenv
+        run: pip install pipenv
 
-      - name: Build a binary wheel and a source tarball
-        run: python -m build --sdist --wheel --outdir dist/ .
+      - name: Lint with ansible-lint
+        run: |
+          direnv allow .
+          direnv exec . python -m build --sdist --wheel --outdir dist/ .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
