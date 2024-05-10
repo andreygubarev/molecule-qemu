@@ -8,7 +8,16 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        version:
+          - 3.0
+          - 4.0
+          - 5.0
+          - 6.0
+          - 7.0
+          - 8.0
+          - 9.0
     steps:
       - uses: actions/checkout@v4
 
@@ -32,6 +41,6 @@ jobs:
       - name: Run test
         run: |
           direnv allow .
-          direnv exec . pipenv install ansible~=5.0.0
+          direnv exec . pipenv install ansible~=${{ matrix.version }}
           direnv exec . ansible-galaxy collection install -r requirements.yml
           direnv exec . make test-platform-amd64
