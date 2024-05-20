@@ -21,6 +21,9 @@ Supported Ansible versions:
 - 8.x
 - 9.x
 
+Supported Molecule versions:
+- 0.5.x
+
 Support of other platforms and guest OS is possible, but not tested. Please, open an issue if you want to add support for other platforms.
 
 Supported network modes:
