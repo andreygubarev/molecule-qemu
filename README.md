@@ -256,6 +256,8 @@ QEMU images caches is: `~/.cache/molecule/.qemu`.
 
 The development of the Molecule `QEMU` driver was motivated by the author's choice of the Apple M1 as their primary development machine. He wanted to test Ansible roles on the Apple M1 but preferred not to rely on `Docker` for testing due to challenges with Docker's `systemd` support. Author never liked to install supplementary software such as `Vagrant` and `VirtualBox` on development machine. Author is aware of `libvirt` and `virt-manager` but their complexity and the lack of support was frustrating.
 
+About molecule `0.6.x` and higher. Author has no idea why `molecule` decided to re-implement its own architecture and discard third-party drivers support. Explanations are not clear and the author does not understand the benefits of the new architecture. `molecule` of version `0.5.x` provides a mature and stable functionality that is sufficient for complex testing scenarios. `molecule` of version `0.6.x` focuses on simplicity and ease of use, focuses on Docker as the primary driver for testing, which is not suitable for most of the cases met by the author.
+
 # Reference
 
 - [Ansible](https://www.ansible.com/)
