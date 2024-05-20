@@ -24,6 +24,8 @@ Supported Ansible versions:
 Supported Molecule versions:
 - 0.5.x
 
+`molecule-qemu` does not provide support for `molecule` of version `0.6.x` and higher. Support is unfortunately not planned. Molecule `0.6.x` has a completely different architecture and is not compatible with the current implementation. Molecule of version `0.5.x` is still supported and works well. Future versions of `molecule-qemu` will be released only for `molecule` of version `0.5.x` which means that at some point `molecule-qemu` becomes obsolete.
+
 Support of other platforms and guest OS is possible, but not tested. Please, open an issue if you want to add support for other platforms.
 
 Supported network modes:
