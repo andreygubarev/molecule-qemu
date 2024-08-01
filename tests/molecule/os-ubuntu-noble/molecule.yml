@@ -1,0 +1,19 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: molecule-qemu
+platforms:
+  - name: ubuntu-noble-amd64
+    image_url: https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
+    image_checksum: sha256:https://cloud-images.ubuntu.com/noble/current/SHA256SUMS
+    network_ssh_port: 2222
+  - name: ubuntu-noble-arm64
+    image_arch: aarch64
+    image_url: https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-arm64.img
+    image_checksum: sha256:https://cloud-images.ubuntu.com/noble/current/SHA256SUMS
+    network_ssh_port: 2223
+provisioner:
+  name: ansible
+verifier:
+  name: ansible
