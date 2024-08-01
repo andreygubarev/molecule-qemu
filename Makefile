@@ -26,7 +26,7 @@ test-network: test-network-shared test-network-user  ## Test network
 test-os-debian: test-os-debian-bullseye test-os-debian-bookworm  ## Test Debian OS
 
 .PHONY: test-os-ubuntu
-test-os-ubuntu: test-os-ubuntu-focal test-os-ubuntu-jammy  ## Test Ubuntu OS
+test-os-ubuntu: test-os-ubuntu-focal test-os-ubuntu-jammy test-os-ubuntu-noble  ## Test Ubuntu OS
 
 .PHONY: test-os
 test-os: test-os-debian test-os-ubuntu  ## Test OS
