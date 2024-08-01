@@ -16,7 +16,7 @@ users:
       - wheel
       {%- endif +%}
     shell: /bin/bash
-    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
     lock_passwd: true
     ssh_authorized_keys:
       - {{ ssh_keypair.public_key }}
