@@ -440,7 +440,8 @@
         mode: "0644"
 
     ### wait for cloud-init to complete #######################################
-    - add_host:
+    - name: Add hosts to in-memory inventory for follow-up tasks
+      ansible.builtin.add_host:
         name: "{{ item.name }}"
         ansible_user: "root"
         ansible_become: yes
@@ -455,5 +456,6 @@
     - name: Wait for Cloud-init to complete
       ansible.builtin.command: "cloud-init status --wait"
       register: cloud_init_status
+      changed_when: false
       delegate_to: "{{ item.name }}"
       loop: "{{ molecule_instances }}"
